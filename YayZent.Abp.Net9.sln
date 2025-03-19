@@ -1,0 +1,99 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{102E7E67-F883-48F7-A85E-77989B32A989}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Abp.Application", "src\YayZent.Abp.Application\YayZent.Abp.Application.csproj", "{FA482E09-2129-4BB2-A9E4-71DA065301F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Abp.Application.Contracts", "src\YayZent.Abp.Application.Contracts\YayZent.Abp.Application.Contracts.csproj", "{391EB7E6-968D-4721-8780-E40E2F436E27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Abp.Domain", "src\YayZent.Abp.Domain\YayZent.Abp.Domain.csproj", "{C009E91B-9E65-433C-BBF0-EEBF6BBA1C8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Abp.Domain.Shared", "src\YayZent.Abp.Domain.Shared\YayZent.Abp.Domain.Shared.csproj", "{3ED2725D-A659-42A6-A976-74DD60402F85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Abp.SqlSugarCore", "src\YayZent.Abp.SqlSugarCore\YayZent.Abp.SqlSugarCore.csproj", "{5FA15624-1027-41B0-A115-174773EAA673}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Abp.Web", "src\YayZent.Abp.Web\YayZent.Abp.Web.csproj", "{95F7B072-E5E8-4AD2-BE8E-FCD3F4FF94E7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "framework", "framework", "{C8142E24-0CFD-4FF9-A5D4-E24961F5078F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Ddd.Application", "framework\YayZent.Framework.Ddd.Application\YayZent.Framework.Ddd.Application.csproj", "{E50396F6-8064-4DA6-A70F-76D30AF18D08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Ddd.Application.Contracts", "framework\YayZent.Framework.Ddd.Application.Contracts\YayZent.Framework.Ddd.Application.Contracts.csproj", "{0D5557FC-9CF8-4E01-B844-E59859347416}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "moudle", "moudle", "{E1555A8F-35D2-4B73-9BD2-47216485ED0A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blog", "blog", "{01E5DD37-10E8-4D17-AD02-61B124DEEF1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Blog.Application", "module\blog\YayZent.Framework.Blog.Application\YayZent.Framework.Blog.Application.csproj", "{DBFFF840-F885-4A57-B2CD-91AD46A4E692}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Blog.Application.Contracts", "module\blog\YayZent.Framework.Blog.Application.Contracts\YayZent.Framework.Blog.Application.Contracts.csproj", "{C9FFAF66-2031-45E5-8E0A-E0ED1AF39724}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Blog.Domain", "module\blog\YayZent.Framework.Blog.Domain\YayZent.Framework.Blog.Domain.csproj", "{EEAEDEFA-E765-4B0C-8251-AEA1CB3E9301}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Blog.Domain.Shared", "module\blog\YayZent.Framework.Blog.Domain.Shared\YayZent.Framework.Blog.Domain.Shared.csproj", "{71FA34EE-A384-485C-8080-B59F6B6EC52A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Blog.SqlSugarCore", "module\blog\YayZent.Framework.Blog.SqlSugarCore\YayZent.Framework.Blog.SqlSugarCore.csproj", "{A679690D-B461-4012-B800-F41A5F79A6C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.SqlSugarCore", "framework\YayZent.Framework.SqlSugarCore\YayZent.Framework.SqlSugarCore.csproj", "{C30A6D1B-A5D6-4132-AE11-5E3DC92984E1}"
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FAB1C0A1-0A13-4844-873E-27CB77EBD3E4}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FA482E09-2129-4BB2-A9E4-71DA065301F4} = {102E7E67-F883-48F7-A85E-77989B32A989}
+		{391EB7E6-968D-4721-8780-E40E2F436E27} = {102E7E67-F883-48F7-A85E-77989B32A989}
+		{C009E91B-9E65-433C-BBF0-EEBF6BBA1C8D} = {102E7E67-F883-48F7-A85E-77989B32A989}
+		{3ED2725D-A659-42A6-A976-74DD60402F85} = {102E7E67-F883-48F7-A85E-77989B32A989}
+		{5FA15624-1027-41B0-A115-174773EAA673} = {102E7E67-F883-48F7-A85E-77989B32A989}
+		{95F7B072-E5E8-4AD2-BE8E-FCD3F4FF94E7} = {102E7E67-F883-48F7-A85E-77989B32A989}
+		{E50396F6-8064-4DA6-A70F-76D30AF18D08} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+		{0D5557FC-9CF8-4E01-B844-E59859347416} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+		{01E5DD37-10E8-4D17-AD02-61B124DEEF1C} = {E1555A8F-35D2-4B73-9BD2-47216485ED0A}
+		{DBFFF840-F885-4A57-B2CD-91AD46A4E692} = {01E5DD37-10E8-4D17-AD02-61B124DEEF1C}
+		{C9FFAF66-2031-45E5-8E0A-E0ED1AF39724} = {01E5DD37-10E8-4D17-AD02-61B124DEEF1C}
+		{EEAEDEFA-E765-4B0C-8251-AEA1CB3E9301} = {01E5DD37-10E8-4D17-AD02-61B124DEEF1C}
+		{71FA34EE-A384-485C-8080-B59F6B6EC52A} = {01E5DD37-10E8-4D17-AD02-61B124DEEF1C}
+		{A679690D-B461-4012-B800-F41A5F79A6C5} = {01E5DD37-10E8-4D17-AD02-61B124DEEF1C}
+		{C30A6D1B-A5D6-4132-AE11-5E3DC92984E1} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA482E09-2129-4BB2-A9E4-71DA065301F4}.|Any CPU.ActiveCfg = |Any CPU
+		{FA482E09-2129-4BB2-A9E4-71DA065301F4}.|Any CPU.Build.0 = |Any CPU
+		{391EB7E6-968D-4721-8780-E40E2F436E27}.|Any CPU.ActiveCfg = |Any CPU
+		{391EB7E6-968D-4721-8780-E40E2F436E27}.|Any CPU.Build.0 = |Any CPU
+		{C009E91B-9E65-433C-BBF0-EEBF6BBA1C8D}.|Any CPU.ActiveCfg = |Any CPU
+		{C009E91B-9E65-433C-BBF0-EEBF6BBA1C8D}.|Any CPU.Build.0 = |Any CPU
+		{3ED2725D-A659-42A6-A976-74DD60402F85}.|Any CPU.ActiveCfg = |Any CPU
+		{3ED2725D-A659-42A6-A976-74DD60402F85}.|Any CPU.Build.0 = |Any CPU
+		{5FA15624-1027-41B0-A115-174773EAA673}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA15624-1027-41B0-A115-174773EAA673}.|Any CPU.Build.0 = Debug|Any CPU
+		{95F7B072-E5E8-4AD2-BE8E-FCD3F4FF94E7}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{95F7B072-E5E8-4AD2-BE8E-FCD3F4FF94E7}.|Any CPU.Build.0 = Debug|Any CPU
+		{E50396F6-8064-4DA6-A70F-76D30AF18D08}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{E50396F6-8064-4DA6-A70F-76D30AF18D08}.|Any CPU.Build.0 = Debug|Any CPU
+		{0D5557FC-9CF8-4E01-B844-E59859347416}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D5557FC-9CF8-4E01-B844-E59859347416}.|Any CPU.Build.0 = Debug|Any CPU
+		{DBFFF840-F885-4A57-B2CD-91AD46A4E692}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBFFF840-F885-4A57-B2CD-91AD46A4E692}.|Any CPU.Build.0 = Debug|Any CPU
+		{C9FFAF66-2031-45E5-8E0A-E0ED1AF39724}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9FFAF66-2031-45E5-8E0A-E0ED1AF39724}.|Any CPU.Build.0 = Debug|Any CPU
+		{EEAEDEFA-E765-4B0C-8251-AEA1CB3E9301}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEAEDEFA-E765-4B0C-8251-AEA1CB3E9301}.|Any CPU.Build.0 = Debug|Any CPU
+		{71FA34EE-A384-485C-8080-B59F6B6EC52A}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{71FA34EE-A384-485C-8080-B59F6B6EC52A}.|Any CPU.Build.0 = Debug|Any CPU
+		{A679690D-B461-4012-B800-F41A5F79A6C5}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{A679690D-B461-4012-B800-F41A5F79A6C5}.|Any CPU.Build.0 = Debug|Any CPU
+		{C30A6D1B-A5D6-4132-AE11-5E3DC92984E1}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{C30A6D1B-A5D6-4132-AE11-5E3DC92984E1}.|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		|Any CPU = |Any CPU
+	EndGlobalSection
+EndGlobal
