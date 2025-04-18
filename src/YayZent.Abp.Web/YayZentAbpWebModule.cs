@@ -69,6 +69,12 @@ public class YayZentAbpWebModule: AbpModule
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         var app = context.GetApplicationBuilder();
+
+        app.UseRouting();
         app.UseCors(DefaultCorsPolicyName);
+
+        app.UseAuthorization();
+
+
     }
 }

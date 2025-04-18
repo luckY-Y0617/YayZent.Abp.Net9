@@ -14,8 +14,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\framework\YayZent.Framework.AspNetCore\YayZent.Framework.AspNetCore.csproj" />
       <ProjectReference Include="..\YayZent.Abp.Application\YayZent.Abp.Application.csproj" />
       <ProjectReference Include="..\YayZent.Abp.SqlSugarCore\YayZent.Abp.SqlSugarCore.csproj" />
     </ItemGroup>
+
 
 </Project>

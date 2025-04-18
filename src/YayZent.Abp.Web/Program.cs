@@ -34,13 +34,11 @@ public class Program
             app.UseSwaggerUI(); // 启用 Swagger UI
         }
 
-        app.UseRouting();  // 确保路由系统启用
 
-        app.UseAuthorization();
         await app.InitializeApplicationAsync();
-
         
-        app.MapControllers();  // ✅ 推荐的写法
+        app.MapControllers();
+
         
         await app.RunAsync();
     }

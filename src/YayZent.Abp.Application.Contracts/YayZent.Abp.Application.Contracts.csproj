@@ -14,4 +14,8 @@
       <ProjectReference Include="..\YayZent.Abp.Domain.Shared\YayZent.Abp.Domain.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
 </Project>

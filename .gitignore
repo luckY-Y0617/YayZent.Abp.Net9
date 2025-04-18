@@ -16,11 +16,7 @@ node_modules/
 # ABP 框架分析文件
 *.abppkg.analyze.json
 
-# Ignore Visual Studio folders and files
-.vs/
-
 # Ignore NuGet and Rider related files
-**/obj/
 **/project.assets.json
 **/project.nuget.cache
 **/project.packagespec.json
@@ -30,22 +26,8 @@ node_modules/
 # Ignore Rider/Resharper settings
 *.DotSettings.user
 
-# Ignore build output directories
-**/bin/
-**/obj/
-
-# Ignore IDE configuration files
-.vs/
-.idea/
-.vscode/
-
-# Ignore environment-specific configuration files
-appsettings.Development.json
-
-# Ignore Rider/Resharper settings
-YayZent.Abp.Net9.sln.DotSettings.user
-
 # Ignore configuration files for development
 src/YayZent.Abp.Web/appsettings.Development.json
 
-
+# Ignore appsettings.json if it contains local environment configurations
+src/YayZent.Abp.Web/appsettings.json
