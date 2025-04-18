@@ -1,8 +1,10 @@
+using Microsoft.OpenApi.Models;
+
 namespace YayZent.Abp.Web;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -10,39 +12,36 @@ public class Program
         builder.Services.AddAuthorization();
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        builder.Services.AddOpenApi();
+        builder.Services.AddEndpointsApiExplorer();
+
+        builder.Services.AddAbpSwaggerGen(
+            options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Abp", Version = "v1" });
+                options.DocInclusionPredicate((docName, description) => true);
+                options.CustomSchemaIds(type => type.FullName);
+            });
+
+        builder.Host.UseAutofac();
+        await builder.Services.AddApplicationAsync<YayZentAbpWebModule>();
 
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
+            app.UseSwagger();    // 启用 Swagger
+            app.UseSwaggerUI(); // 启用 Swagger UI
         }
 
-        app.UseHttpsRedirection();
+        app.UseRouting();  // 确保路由系统启用
 
         app.UseAuthorization();
+        await app.InitializeApplicationAsync();
 
-        var summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                        new WeatherForecast
-                        {
-                            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                            TemperatureC = Random.Shared.Next(-20, 55),
-                            Summary = summaries[Random.Shared.Next(summaries.Length)]
-                        })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast");
-
-        app.Run();
+        
+        app.MapControllers();  // ✅ 推荐的写法
+        
+        await app.RunAsync();
     }
 }

@@ -1,0 +1,17 @@
+# 编译输出目录
+bin/
+obj/
+
+# 日志文件
+*.log
+
+# IDE 配置文件
+.vs/
+.vscode/
+.idea/
+
+# Node.js 包
+node_modules/
+
+# ABP 框架分析文件
+*.abppkg.analyze.json
