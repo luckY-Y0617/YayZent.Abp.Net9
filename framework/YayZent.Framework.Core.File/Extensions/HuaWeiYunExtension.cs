@@ -1,7 +1,7 @@
 using OBS;
 using OBS.Model;
 
-namespace YayZent.Framework.Core.Storage.Extensions;
+namespace YayZent.Framework.Core.File.Extensions;
 
 public static class HuaWeiYunExtension
 {

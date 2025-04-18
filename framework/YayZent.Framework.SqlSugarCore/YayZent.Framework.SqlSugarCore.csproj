@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\YayZent.Framework.Core\YayZent.Framework.Core.csproj" />
+      <ProjectReference Include="..\YayZent.Framework.SqlSugarCore.Abstractions\YayZent.Framework.SqlSugarCore.Abstractions.csproj" />
+    </ItemGroup>
+
 </Project>

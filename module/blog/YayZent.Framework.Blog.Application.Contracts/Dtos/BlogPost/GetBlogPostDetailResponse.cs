@@ -1,4 +1,4 @@
-namespace YayZent.Framework.Blog.Application.Contracts.Dtos;
+namespace YayZent.Framework.Blog.Application.Contracts.Dtos.BlogPost;
 
 public class GetBlogPostDetailResponse
 {

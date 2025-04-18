@@ -3,9 +3,9 @@ using YayZent.Framework.SqlSugarCore.Abstractions;
 
 namespace YayZent.Framework.SqlSugarCore;
 
-public class AsyncLoaclDbContextAccessor
+public class AsyncLocalDbContextAccessor
 {
-    public static AsyncLoaclDbContextAccessor Instance { get; } = new();
+    public static AsyncLocalDbContextAccessor Instance { get; } = new();
 
     public ISqlSugarDbContext? CurrentDbContext
     {

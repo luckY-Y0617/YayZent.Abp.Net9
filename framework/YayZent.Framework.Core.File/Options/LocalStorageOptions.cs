@@ -1,4 +1,4 @@
-namespace YayZent.Framework.Core.Storage.Options;
+namespace YayZent.Framework.Core.File.Options;
 
 public class LocalStorageOptions
 {

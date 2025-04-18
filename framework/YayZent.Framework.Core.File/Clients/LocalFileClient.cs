@@ -1,17 +1,18 @@
 using Microsoft.Extensions.Options;
+using Volo.Abp;
 using YayZent.Framework.Core.File.Abstractions;
 using YayZent.Framework.Core.File.Enums;
 using YayZent.Framework.Core.File.Options;
 
 namespace YayZent.Framework.Core.File.Clients;
 
-public class LocalStorageClient: IStorageClient
+public class LocalFileClient: IFileClient
 {
     private readonly IOptionsSnapshot<LocalStorageOptions> _options;
     public string Provider => "Local";
     public StorageType StorageType => StorageType.Local;
 
-    public LocalStorageClient(IOptionsSnapshot<LocalStorageOptions> options)
+    public LocalFileClient(IOptionsSnapshot<LocalStorageOptions> options)
     {
         _options = options;
     }
@@ -50,5 +51,14 @@ public class LocalStorageClient: IStorageClient
         }
 
         return new Uri(fullPath);
+    }
+
+    public Task<Stream> ReadFileAsync(string fullPath, CancellationToken cancellationToken = default)
+    {
+        if (!System.IO.File.Exists(fullPath))
+        {
+            throw new BusinessException("本地文件不存在");
+        }
+        return Task.FromResult<Stream>(new FileStream(fullPath, FileMode.Open, FileAccess.Read));
     }
 }

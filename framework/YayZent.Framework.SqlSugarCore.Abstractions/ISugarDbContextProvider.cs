@@ -1,6 +1,5 @@
 namespace YayZent.Framework.SqlSugarCore.Abstractions;
-
-public interface ISugarDbContextProvider
+public interface ISugarDbContextProvider<TDbContext> where TDbContext : ISqlSugarDbContext
 {
-    
+    Task<TDbContext> GetDbContextAsync();
 }

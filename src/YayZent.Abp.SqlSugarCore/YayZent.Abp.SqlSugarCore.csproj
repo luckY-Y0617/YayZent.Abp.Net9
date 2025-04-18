@@ -6,4 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\framework\YayZent.Framework.SqlSugarCore\YayZent.Framework.SqlSugarCore.csproj" />
+      <ProjectReference Include="..\..\module\blog\YayZent.Framework.Blog.SqlSugarCore\YayZent.Framework.Blog.SqlSugarCore.csproj" />
+      <ProjectReference Include="..\YayZent.Abp.Domain\YayZent.Abp.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

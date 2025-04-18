@@ -1,6 +1,12 @@
+using Volo.Abp.Application;
+using Volo.Abp.Modularity;
+using YayZent.Framework.Ddd.Application.Contracts;
+
 namespace YayZent.Framework.Ddd.Application;
 
-public class YayZentFrameworkDddApplicationModule
+[DependsOn(typeof(AbpDddApplicationModule),
+    typeof(YayZentFrameworkDddApplicationContractsModule))]
+public class YayZentFrameworkDddApplicationModule: AbpModule
 {
     
 }

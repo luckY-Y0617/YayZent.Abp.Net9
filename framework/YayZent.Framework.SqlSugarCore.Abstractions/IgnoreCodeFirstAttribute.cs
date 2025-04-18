@@ -1,6 +1,7 @@
 namespace YayZent.Framework.SqlSugarCore.Abstractions;
 
-public class IgnoreCodeFirstAttribute
+[AttributeUsage(AttributeTargets.Class)]
+public class IgnoreCodeFirstAttribute : Attribute
 {
     
 }

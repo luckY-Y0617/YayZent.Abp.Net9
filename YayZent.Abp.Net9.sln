@@ -39,6 +39,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Blog.SqlS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.SqlSugarCore", "framework\YayZent.Framework.SqlSugarCore\YayZent.Framework.SqlSugarCore.csproj", "{C30A6D1B-A5D6-4132-AE11-5E3DC92984E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.SqlSugarCore.Abstractions", "framework\YayZent.Framework.SqlSugarCore.Abstractions\YayZent.Framework.SqlSugarCore.Abstractions.csproj", "{42FBA59B-F914-4057-AFE5-5A3C9C2A6BE0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9B2D49E1-A817-42B9-917A-E6ECBFD0584E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Core", "framework\YayZent.Framework.Core\YayZent.Framework.Core.csproj", "{8EE2607A-80DC-4855-AD4A-E6788ED54823}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.AspNetCore", "framework\YayZent.Framework.AspNetCore\YayZent.Framework.AspNetCore.csproj", "{429074F6-6BB3-4047-A8F3-1CB71CC2E46C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{ACA1EBD6-9DB2-43A6-80BD-1F887734140F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Core.File", "framework\YayZent.Framework.Core.File\YayZent.Framework.Core.File.csproj", "{AB8FDA1E-231E-4CD1-A15E-C737552075C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Core.Rendering", "framework\YayZent.Framework.Core.Rendering\YayZent.Framework.Core.Rendering.csproj", "{7EA77DE7-DBAD-45B5-89CC-6B9B95D7A28E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "analytics", "analytics", "{ECE1FCD4-A05C-4EE8-AD00-EBCBE28685B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.Analytics.Application", "module\analytics\YayZent.Framework.Analytics.Application\YayZent.Framework.Analytics.Application.csproj", "{7032B807-693E-4727-9A3D-35C1E4DB55D4}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +80,13 @@ Global
 		{71FA34EE-A384-485C-8080-B59F6B6EC52A} = {01E5DD37-10E8-4D17-AD02-61B124DEEF1C}
 		{A679690D-B461-4012-B800-F41A5F79A6C5} = {01E5DD37-10E8-4D17-AD02-61B124DEEF1C}
 		{C30A6D1B-A5D6-4132-AE11-5E3DC92984E1} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+		{42FBA59B-F914-4057-AFE5-5A3C9C2A6BE0} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+		{8EE2607A-80DC-4855-AD4A-E6788ED54823} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+		{429074F6-6BB3-4047-A8F3-1CB71CC2E46C} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+		{AB8FDA1E-231E-4CD1-A15E-C737552075C2} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+		{7EA77DE7-DBAD-45B5-89CC-6B9B95D7A28E} = {C8142E24-0CFD-4FF9-A5D4-E24961F5078F}
+		{ECE1FCD4-A05C-4EE8-AD00-EBCBE28685B0} = {E1555A8F-35D2-4B73-9BD2-47216485ED0A}
+		{7032B807-693E-4727-9A3D-35C1E4DB55D4} = {ECE1FCD4-A05C-4EE8-AD00-EBCBE28685B0}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FA482E09-2129-4BB2-A9E4-71DA065301F4}.|Any CPU.ActiveCfg = |Any CPU
@@ -92,6 +117,18 @@ Global
 		{A679690D-B461-4012-B800-F41A5F79A6C5}.|Any CPU.Build.0 = Debug|Any CPU
 		{C30A6D1B-A5D6-4132-AE11-5E3DC92984E1}.|Any CPU.ActiveCfg = Debug|Any CPU
 		{C30A6D1B-A5D6-4132-AE11-5E3DC92984E1}.|Any CPU.Build.0 = Debug|Any CPU
+		{42FBA59B-F914-4057-AFE5-5A3C9C2A6BE0}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{42FBA59B-F914-4057-AFE5-5A3C9C2A6BE0}.|Any CPU.Build.0 = Debug|Any CPU
+		{8EE2607A-80DC-4855-AD4A-E6788ED54823}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EE2607A-80DC-4855-AD4A-E6788ED54823}.|Any CPU.Build.0 = Debug|Any CPU
+		{429074F6-6BB3-4047-A8F3-1CB71CC2E46C}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{429074F6-6BB3-4047-A8F3-1CB71CC2E46C}.|Any CPU.Build.0 = Debug|Any CPU
+		{AB8FDA1E-231E-4CD1-A15E-C737552075C2}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB8FDA1E-231E-4CD1-A15E-C737552075C2}.|Any CPU.Build.0 = Debug|Any CPU
+		{7EA77DE7-DBAD-45B5-89CC-6B9B95D7A28E}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EA77DE7-DBAD-45B5-89CC-6B9B95D7A28E}.|Any CPU.Build.0 = Debug|Any CPU
+		{7032B807-693E-4727-9A3D-35C1E4DB55D4}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{7032B807-693E-4727-9A3D-35C1E4DB55D4}.|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		|Any CPU = |Any CPU

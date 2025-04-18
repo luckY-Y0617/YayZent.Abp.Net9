@@ -10,6 +10,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\framework\YayZent.Framework.Ddd.Application.Contracts\YayZent.Framework.Ddd.Application.Contracts.csproj" />
+      <ProjectReference Include="..\..\module\blog\YayZent.Framework.Blog.Application.Contracts\YayZent.Framework.Blog.Application.Contracts.csproj" />
+      <ProjectReference Include="..\YayZent.Abp.Domain.Shared\YayZent.Abp.Domain.Shared.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,10 @@
+using Volo.Abp;
+using Volo.Abp.Application.Services;
+
 namespace YayZent.Abp.Application.Contracts.IServices;
 
-public interface ITestService
+[RemoteService]
+public interface ITestService: IApplicationService
 {
-    
+    Task<string> HelloWorldAsync();
 }

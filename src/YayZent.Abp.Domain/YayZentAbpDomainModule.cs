@@ -1,6 +1,12 @@
+using Volo.Abp.Domain;
+using Volo.Abp.Modularity;
+using YayZent.Abp.Domain.Shared;
+
 namespace YayZent.Abp.Domain;
 
-public class YayZentAbpDomainModule
+[DependsOn(typeof(AbpDddDomainModule),
+    typeof(YayZentAbpDomainSharedModule))]
+public class YayZentAbpDomainModule: AbpModule
 {
     
 }

@@ -7,12 +7,16 @@ public class GetBlogPostListResponse
 
     public List<BlogPostDetail>? BlogPostList { get; set; }
     
+    public required int TotalCount { get; set; }
+    
     public class BlogPostDetail
     {
         public Guid Id { get; set; }
         public required string Title { get; set; }
         public string? Summary { get; set; }
         public string? Category { get; set; }
+        
+        public string? ImageUrl { get; set; }
         public DateTime? CreationTime { get; set; }
         
     }

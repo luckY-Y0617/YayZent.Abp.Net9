@@ -1,15 +1,22 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 
-namespace YayZent.Framework.Blog.Application.Contracts.Dtos;
+namespace YayZent.Framework.Blog.Application.Contracts.Dtos.BlogPost;
 
 public class CreateBlogPostRequest
 {
     public required string Title { get; set; }
-    public string? Summary { get; set; }
-    public List<string>? Tags { get; set; }
+
     public required string BlogContent { get; set; }
+
+    public required string Author { get; set; } = "小🐏";
+    
+    public required string Category { get; set; }
+    
     public IFormFile? Image { get; set; }
+
+    public string? Summary { get; set; }
+    public string? Tags { get; set; }
 }
 
 public class CreateBlogPostRequestValidator : AbstractValidator<CreateBlogPostRequest>

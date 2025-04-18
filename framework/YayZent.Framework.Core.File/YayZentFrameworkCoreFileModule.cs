@@ -4,7 +4,7 @@ using YayZent.Framework.Core.File.Options;
 
 namespace YayZent.Framework.Core.File;
 
-public class YayZentFrameworkCoreStorageModule: AbpModule
+public class YayZentFrameworkCoreFileModule: AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

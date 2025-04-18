@@ -3,11 +3,11 @@ using YayZent.Framework.Core.File.Enums;
 
 namespace YayZent.Framework.Core.File.Resolvers;
 
-public class StorageClientResolver: IStorageClientResolver
+public class FileClientResolver: IFileClientResolver
 {
     private readonly IEnumerable<IFileClient> _storageClients;
 
-    public StorageClientResolver(IEnumerable<IFileClient> storageClients)
+    public FileClientResolver(IEnumerable<IFileClient> storageClients)
     {
         _storageClients = storageClients;
     }

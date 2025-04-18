@@ -5,7 +5,7 @@ using YayZent.Framework.SqlSugarCore.Abstractions;
 
 namespace YayZent.Framework.SqlSugarCore;
 
-public class SqlSugarDbContext(IAbpLazyServiceProvider lazyServiceProvider): ISqlSugarDbContextInterceptor
+public class SqlSugarDataInterceptor(IAbpLazyServiceProvider lazyServiceProvider): ISqlSugarDbContextInterceptor
 {
     public int ExecutionOrder => 0;
     

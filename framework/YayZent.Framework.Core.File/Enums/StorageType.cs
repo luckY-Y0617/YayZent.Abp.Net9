@@ -1,4 +1,4 @@
-namespace YayZent.Framework.Core.Storage.Enums;
+namespace YayZent.Framework.Core.File.Enums;
 
 public enum StorageType
 {

@@ -4,7 +4,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
 
-namespace YayZent.Framework.SqlSugar.Abstractions;
+namespace YayZent.Framework.SqlSugarCore.Abstractions;
 
 public interface ISqlSugarRepository<TEntity, TKey> : ISqlSugarRepository<TEntity>, IRepository<TEntity, TKey>  where 
     TEntity : class, IEntity<TKey>, new(){}
@@ -15,7 +15,7 @@ public interface ISqlSugarRepository<TEntity> : IRepository<TEntity>, IUnitOfWor
     ISugarQueryable<TEntity> DbQueryable { get; }
 
     Task<ISqlSugarClient> GetDbContextAsync();
-    Task<ISqlSugarClient> GetSqlSugarClientAsync();
+    Task<ISqlSugarClient> AsDbContextAsync();
     
     Task<IQueryable<TEntity>> GetCustomQueryableAsync();
     
@@ -41,8 +41,8 @@ public interface ISqlSugarRepository<TEntity> : IRepository<TEntity>, IUnitOfWor
 
     #region 多查
     //多查
-    Task<List<TEntity>> GetListAsync();
-    Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> whereExpression);
+    Task<List<TEntity>> GetAllListAsync();
+    Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> whereExpression);
     #endregion
 
     #region 分页查

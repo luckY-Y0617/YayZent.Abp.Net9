@@ -6,4 +6,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="HtmlSanitizer" Version="9.1.878-beta" />
+      <PackageReference Include="Markdig" Version="0.40.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\YayZent.Framework.Core\YayZent.Framework.Core.csproj" />
+    </ItemGroup>
+
 </Project>

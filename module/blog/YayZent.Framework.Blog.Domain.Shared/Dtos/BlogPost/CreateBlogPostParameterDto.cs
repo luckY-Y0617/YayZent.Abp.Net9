@@ -26,7 +26,7 @@ public class CreateBlogPostParameterDto
     
     public string? ImageName { get; set; }
     
-    public string? Category { get; set; }
+    public required string Category { get; set; }
     
     public List<Guid>? TagIds { get; set; }
 }
