@@ -48,4 +48,6 @@ YayZent.Abp.Net9.sln.DotSettings.user
 # Ignore configuration files for development
 src/YayZent.Abp.Web/appsettings.Development.json
 
+# Ignore JetBrains IDE configuration files
+.idea/
 
