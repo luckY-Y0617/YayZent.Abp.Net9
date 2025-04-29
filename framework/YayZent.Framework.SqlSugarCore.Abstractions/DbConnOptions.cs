@@ -21,4 +21,7 @@ public class DbConnOptions
     public bool EnbaleReadWriteSplitting { get; set; }
     
     public List<string>? ReadWriteSplittingUrl { get; set; }
+    
+    public bool EnabledSaasMultiTenancy { get; set; } = false;
+    
 }

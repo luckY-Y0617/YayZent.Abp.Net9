@@ -1,30 +1,44 @@
-using SqlSugar;
+using System.Threading;
+using System.Threading.Tasks;
 using Volo.Abp.Uow;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 
 namespace YayZent.Framework.SqlSugarCore.Uow;
 
-public class SqlSugarTransactionApi(ISqlSugarDbContext sqlSugarDbContext): ITransactionApi, ISupportsRollback
+public class SqlSugarTransactionApi(ISqlSugarDbContext dbContext) : ITransactionApi
 {
-    private ISqlSugarDbContext _sqlSugarDbContext = sqlSugarDbContext;
-
-    public ISqlSugarDbContext GetDbContext()
-    {
-        return _sqlSugarDbContext;
-    }
+    private readonly ISqlSugarDbContext _dbContext = dbContext;
+    private bool _completed = false;
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        await _sqlSugarDbContext.SqlSugarClient.Ado.CommitTranAsync();
-    }
+        if (_completed)
+        {
+            return;
+        }
 
-    public void Dispose()
-    {
-        _sqlSugarDbContext.SqlSugarClient.Ado.Dispose();
+        await _dbContext.SqlSugarClient.Ado.CommitTranAsync();
+        _completed = true;
     }
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)
     {
-        await _sqlSugarDbContext.SqlSugarClient.Ado.RollbackTranAsync();
+        if (_completed)
+        {
+            return;
+        }
+
+        await _dbContext.SqlSugarClient.Ado.RollbackTranAsync();
+        _completed = true;
+    }
+
+    public void Dispose()
+    {
+        // Nothing to dispose here
+    }
+
+    public ISqlSugarDbContext GetDbContext()
+    {
+        return _dbContext;
     }
 }

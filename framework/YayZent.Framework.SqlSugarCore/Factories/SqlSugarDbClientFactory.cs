@@ -1,6 +1,4 @@
-using System.Collections.Concurrent;
 using System.Reflection;
-using Dm;
 using Microsoft.Extensions.Options;
 using SqlSugar;
 using Volo.Abp.Data;
@@ -9,36 +7,54 @@ using Volo.Abp.Threading;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 using Check = Volo.Abp.Check;
 
-namespace YayZent.Framework.SqlSugarCore;
+namespace YayZent.Framework.SqlSugarCore.Factories;
 
-public class SqlSugarDbContextFactory: ISqlSugarDbContext
+public class SqlSugarDbClientFactory(IAbpLazyServiceProvider lazyServiceProvider): ISqlSugarDbClientFactory
 {
-    public ISqlSugarClient SqlSugarClient { get; private set; }
-    private IAbpLazyServiceProvider LazyServiceProvider { get; }
-    public DbConnOptions DbConnOptions => LazyServiceProvider.LazyGetRequiredService<IOptions<DbConnOptions>>().Value;
-    private ISerializeService SerializeService => LazyServiceProvider.LazyGetRequiredService<ISerializeService>();
-    private IEnumerable<ISqlSugarDbContextInterceptor> SqlSugarInterceptors => LazyServiceProvider.LazyGetRequiredService<IEnumerable<ISqlSugarDbContextInterceptor>>();
-    private static readonly ConcurrentDictionary<string, ConnectionConfig> ConnectionConfigs = new ConcurrentDictionary<string, ConnectionConfig>();
+    private readonly IAbpLazyServiceProvider _lazyServiceProvider = lazyServiceProvider;
+    private DbConnOptions DbConnOptions => _lazyServiceProvider.LazyGetRequiredService<IOptions<DbConnOptions>>().Value;
+    private ISerializeService SerializeService => _lazyServiceProvider.LazyGetRequiredService<ISerializeService>();
+    private IEnumerable<ISqlSugarDbContextInterceptor> SqlSugarInterceptors => _lazyServiceProvider.LazyGetRequiredService<IEnumerable<ISqlSugarDbContextInterceptor>>();
 
-    public SqlSugarDbContextFactory(IAbpLazyServiceProvider lazyServiceProvider)
+    public ISqlSugarClient Init()
     {
-        LazyServiceProvider = lazyServiceProvider;
-
         var connectionString = GetCurrentConnectionString();
         var connectionConfig = BuildConnectionConfig(action: options =>
         {
             options.ConnectionString = connectionString;
-            options.DbType = GetCurrentDbType();
+            options.DbType =  GetCurrentDbType();
         });
         
-        SqlSugarClient = new SqlSugarClient(connectionConfig);
+        var sqlSugarClient = new SqlSugarClient(connectionConfig);
         
-        SetDbAop(SqlSugarClient);
+        SetDbAop(sqlSugarClient);
+        
+        return sqlSugarClient;
+    }
+
+    public ISqlSugarClient Create(SqlSugarDbContextCreationContext config)
+    {
+        var connectionConfig = BuildConnectionConfig(action: options =>
+        {
+            options.ConnectionString = config.ConnectionString;
+            options.DbType = config.DbType;
+        });
+        var sqlSugarClient = new SqlSugarClient(connectionConfig);
+        
+        SetDbAop(sqlSugarClient);
+        
+        return sqlSugarClient;
+    }
+    
+    protected DbType GetCurrentDbType()
+    {
+        return DbType.MySql;
     }
     
     protected string GetCurrentConnectionString()
     {
-        var connectionStringResolver = LazyServiceProvider.LazyGetRequiredService<IConnectionStringResolver>();
+        // 根据当前租户，查出真正要用的连接字符串
+        var connectionStringResolver = _lazyServiceProvider.LazyGetRequiredService<IConnectionStringResolver>();
         var connectionString = AsyncHelper.RunSync(() => connectionStringResolver.ResolveAsync());
 
         if (connectionString.IsNullOrWhiteSpace())
@@ -46,11 +62,6 @@ public class SqlSugarDbContextFactory: ISqlSugarDbContext
             Check.NotNull(DbConnOptions.Url, "数据库连接字符串未配置");
         }
         return connectionString;
-    }
-
-    protected DbType GetCurrentDbType()
-    {
-        return DbType.MySql;
     }
 
     protected ConnectionConfig BuildConnectionConfig(Action<ConnectionConfig>? action = null)
@@ -151,29 +162,5 @@ public class SqlSugarDbContextFactory: ISqlSugarDbContext
         sqlSugarClient.Aop.DataExecuted = afterDataExecuted;
         sqlSugarClient.Aop.DataExecuting = onDataExecuting;
     }
-
-    public virtual void BackupDatabase()
-    {
-        string directory = "backup_database";
-        string file = DateTime.Now.ToString("yyyyMMddHHmmss") + $"_{SqlSugarClient.Ado.Connection.Database}";
-        if (!Directory.Exists(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
-
-        switch (DbConnOptions.DbType)
-        {
-            case DbType.MySql:
-                SqlSugarClient.DbMaintenance.BackupDataBase(SqlSugarClient.Ado.Connection.Database, $"{Path.Combine(directory, file)}.sql");
-                break;
-            case DbType.Sqlite:
-                SqlSugarClient.DbMaintenance.BackupDataBase(null, $"{file}.db");
-                break;
-            case DbType.SqlServer:
-                SqlSugarClient.DbMaintenance.BackupDataBase(SqlSugarClient.Ado.Connection.Database, $"{Path.Combine(directory, file)}.bak");
-                break;
-            default:
-                throw new NotImplementedException("其他数据库备份未实现");
-        }
-    }
+    
 }

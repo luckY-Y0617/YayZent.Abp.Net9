@@ -14,6 +14,9 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Modularity;
 using YayZent.Framework.SqlSugarCore.Abstractions;
+using YayZent.Framework.SqlSugarCore.Extensions;
+using YayZent.Framework.SqlSugarCore.Factories;
+using YayZent.Framework.SqlSugarCore.Interceptors;
 using YayZent.Framework.SqlSugarCore.Repositories;
 using YayZent.Framework.SqlSugarCore.Uow;
 using DbType = SqlSugar.DbType;
@@ -50,7 +53,8 @@ public class YayZentFrameworkSqlSugarCoreModule: AbpModule
         });
 
         // 注册 SqlSugar 相关服务
-        services.TryAddScoped<ISqlSugarDbContext, SqlSugarDbContextFactory>();
+        services.TryAddScoped<ISqlSugarDbClientFactory, SqlSugarDbClientFactory>();
+        services.TryAddScoped<ISqlSugarDbContext, DefaultSqlSugarDbContext>();
         services.AddTransient(typeof(IRepository<>), typeof(SqlSugarRepository<>));
         services.AddTransient(typeof(IRepository<,>), typeof(SqlSugarRepository<,>));
         services.AddTransient(typeof(ISqlSugarRepository<>), typeof(SqlSugarRepository<>));
@@ -98,6 +102,7 @@ public class YayZentFrameworkSqlSugarCoreModule: AbpModule
     {
         var moduleContainer = sp.GetRequiredService<IModuleContainer>();
         var db = (sp.GetRequiredService<ISqlSugarDbContext>()).SqlSugarClient;
+
 
         db.DbMaintenance.CreateDatabase();
 

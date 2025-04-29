@@ -59,6 +59,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.AuditLogg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.AuditLogging.SqlSugarCore", "module\audit-logging\YayZent.Framework.AuditLogging.SqlSugarCore\YayZent.Framework.AuditLogging.SqlSugarCore.csproj", "{0A1C884A-F9A9-48CE-A8CD-8B4F605572F3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tenant-management", "tenant-management", "{FAE0D6A9-9189-4927-B473-8130209FEA56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.TenantManagement.Application", "module\tenant-management\YayZent.Framework.TenantManagement.Application\YayZent.Framework.TenantManagement.Application.csproj", "{F8766FBF-5EA6-4B00-B048-1431F23FEFC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YayZent.Framework.TenantManagement.Application.Contracts", "module\tenant-management\YayZent.Framework.TenantManagement.Application.Contracts\YayZent.Framework.TenantManagement.Application.Contracts.csproj", "{ED270422-1BA9-47C8-A2FE-F4A1AE156949}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +97,9 @@ Global
 		{ADDB8AD7-BCD7-4C43-AE9E-D7CE3D16E875} = {2FF962FF-3416-401C-BB70-411CEEDEEBC1}
 		{BF7973C9-295F-4798-A46F-EA8A70B9BBE2} = {2FF962FF-3416-401C-BB70-411CEEDEEBC1}
 		{0A1C884A-F9A9-48CE-A8CD-8B4F605572F3} = {2FF962FF-3416-401C-BB70-411CEEDEEBC1}
+		{FAE0D6A9-9189-4927-B473-8130209FEA56} = {E1555A8F-35D2-4B73-9BD2-47216485ED0A}
+		{F8766FBF-5EA6-4B00-B048-1431F23FEFC8} = {FAE0D6A9-9189-4927-B473-8130209FEA56}
+		{ED270422-1BA9-47C8-A2FE-F4A1AE156949} = {FAE0D6A9-9189-4927-B473-8130209FEA56}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FA482E09-2129-4BB2-A9E4-71DA065301F4}.|Any CPU.ActiveCfg = |Any CPU
@@ -137,6 +146,10 @@ Global
 		{BF7973C9-295F-4798-A46F-EA8A70B9BBE2}.|Any CPU.Build.0 = Debug|Any CPU
 		{0A1C884A-F9A9-48CE-A8CD-8B4F605572F3}.|Any CPU.ActiveCfg = Debug|Any CPU
 		{0A1C884A-F9A9-48CE-A8CD-8B4F605572F3}.|Any CPU.Build.0 = Debug|Any CPU
+		{F8766FBF-5EA6-4B00-B048-1431F23FEFC8}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8766FBF-5EA6-4B00-B048-1431F23FEFC8}.|Any CPU.Build.0 = Debug|Any CPU
+		{ED270422-1BA9-47C8-A2FE-F4A1AE156949}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED270422-1BA9-47C8-A2FE-F4A1AE156949}.|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		|Any CPU = |Any CPU

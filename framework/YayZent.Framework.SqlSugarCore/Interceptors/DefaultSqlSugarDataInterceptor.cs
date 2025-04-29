@@ -15,7 +15,7 @@ using Volo.Abp.Uow;
 using Volo.Abp.Users;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 
-namespace YayZent.Framework.SqlSugarCore
+namespace YayZent.Framework.SqlSugarCore.Interceptors
 {
     public class DefaultSqlSugarDataInterceptor : SqlSugarDataInterceptor
     {

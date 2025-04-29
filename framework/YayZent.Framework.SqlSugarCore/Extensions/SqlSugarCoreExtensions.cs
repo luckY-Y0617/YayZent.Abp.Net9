@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 
-namespace YayZent.Framework.SqlSugarCore;
+namespace YayZent.Framework.SqlSugarCore.Extensions;
 
 public static class SqlSugarCoreExtensions
 {
