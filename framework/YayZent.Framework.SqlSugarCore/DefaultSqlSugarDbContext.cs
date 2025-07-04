@@ -1,8 +1,6 @@
 using SqlSugar;
 using Volo.Abp;
 using YayZent.Framework.SqlSugarCore.Abstractions;
-using System.IO;
-using System;
 using YayZent.Framework.SqlSugarCore.Factories;
 
 namespace YayZent.Framework.SqlSugarCore

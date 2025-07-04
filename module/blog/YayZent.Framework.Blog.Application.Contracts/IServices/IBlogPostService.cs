@@ -7,7 +7,10 @@ namespace YayZent.Framework.Blog.Application.Contracts.IServices;
 
 public interface IBlogPostService: IApplicationService
 {
-    Task<ApiResponse<CreateBlogPostResponse>> CreateAsync(CreateBlogPostRequest input);
+    Task<ApiResponse<CreateBlogPostOutputDto>> CreateAsync(CreateBlogPostInputDto input);
 
-    Task<ApiResponse<GetBlogPostDetailResponse>> GetBlogPostContentAsync(GetBlogPostDetailRequest request);
+    Task<ApiResponse<GetBlogPostDetailOutputDto>> GetBlogPostDetailAsync(GetBlogPostDetailInputDto input);
+
+    Task<ApiResponse<List<GetSortedBlogPostsOutputDto>?>> GetSortedBlogPostsAsync(
+        GetSortedBlogPostsInputDto input);
 }

@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SqlSugarCore" Version="5.1.4.189" />
       <PackageReference Include="Volo.Abp.Ddd.Domain" Version="9.1.0" />
     </ItemGroup>
 

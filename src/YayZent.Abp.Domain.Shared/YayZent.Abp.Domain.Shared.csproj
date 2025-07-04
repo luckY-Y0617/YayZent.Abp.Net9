@@ -10,10 +10,15 @@
 
     <ItemGroup>
       <PackageReference Include="Volo.Abp.Ddd.Domain.Shared" Version="9.1.0" />
+      <PackageReference Include="Volo.Abp.TenantManagement.Domain.Shared" Version="9.1.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\module\audit-logging\YayZent.Framework.AuditLogging.Domain.Shared\YayZent.Framework.AuditLogging.Domain.Shared.csproj" />
+      <ProjectReference Include="..\..\module\auth\YayZent.Framework.Auth.Domain.Shared\YayZent.Framework.Auth.Domain.Shared.csproj" />
+      <ProjectReference Include="..\..\module\bbs\YayZent.Framework.Bbs.Domain.Shared\YayZent.Framework.Bbs.Domain.Shared.csproj" />
       <ProjectReference Include="..\..\module\blog\YayZent.Framework.Blog.Domain.Shared\YayZent.Framework.Blog.Domain.Shared.csproj" />
+      <ProjectReference Include="..\..\module\rbac\YayZent.Framework.Rbac.Domain.Shared\YayZent.Framework.Rbac.Domain.Shared.csproj" />
     </ItemGroup>
 
 </Project>

@@ -34,7 +34,7 @@ public interface ISqlSugarRepository<TEntity> : IRepository<TEntity>, IUnitOfWor
     //单查
     Task<TEntity> GetByIdAsync(dynamic id);
     Task<TEntity> GetSingleAsync(Expression<Func<TEntity, bool>> whereExpression);
-    Task<TEntity> GetFirstAsync(Expression<Func<TEntity, bool>> whereExpression);
+    Task<TEntity?> GetFirstAsync(Expression<Func<TEntity, bool>> whereExpression);
     Task<bool> AnyAsync(Expression<Func<TEntity, bool>> whereExpression);
     Task<long> CountAsync(Expression<Func<TEntity, bool>> whereExpression);
     #endregion
@@ -62,7 +62,7 @@ public interface ISqlSugarRepository<TEntity> : IRepository<TEntity>, IUnitOfWor
     Task<int> InsertReturnIdentityAsync(TEntity entity);
     Task<long> InsertReturnBigIdentityAsync(TEntity entity);
     Task<long> InsertReturnSnowflakeIdAsync(TEntity entity);
-    Task<Entity> InsertReturnEntityAsync(TEntity entity);
+    Task<TEntity> InsertReturnEntityAsync(TEntity entity);
     #endregion
     
     #region 删除

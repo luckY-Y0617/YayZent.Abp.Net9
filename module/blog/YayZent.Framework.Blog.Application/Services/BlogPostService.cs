@@ -1,70 +1,57 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using SqlSugar;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.ObjectMapping;
+using YayZent.Framework.Auth.Domain.Shared.Authorization;
 using YayZent.Framework.Blog.Application.Contracts.Dtos;
 using YayZent.Framework.Blog.Application.Contracts.Dtos.BlogPost;
 using YayZent.Framework.Blog.Application.Contracts.IServices;
 using YayZent.Framework.Blog.Domain.DomainServices.IDomainServices;
 using YayZent.Framework.Blog.Domain.Entities;
 using YayZent.Framework.Blog.Domain.Repositories;
-using YayZent.Framework.Blog.Domain.Shared.Dtos;
 using YayZent.Framework.Core.Rendering.Markdown;
 using YayZent.Framework.Ddd.Application.Contracts.Dtos;
-using YayZent.Framework.SqlSugarCore.Abstractions;
 
 namespace YayZent.Framework.Blog.Application.Services;
 
-[RemoteService]
 public class BlogPostService : ApplicationService, IBlogPostService
 {
+    private readonly IObjectMapper _objectMapper;
     private readonly IBlogPostDomainService _blogPostDomainService;
     private readonly ITagDomainService _tagDomainService;
-    private readonly ITagRepository _tagRepository;
     private readonly IBlogPostRepository _blogPostRepository;
-    private readonly ISqlSugarRepository<BlogFileEntity> _blogFileRepository;
     private readonly IMarkdownRenderService _markdownRenderer;
-    
 
-    public BlogPostService(IBlogPostDomainService blogPostDomainService, ITagDomainService tagDomainService,ITagRepository tagRepository, IBlogPostRepository blogPostRepository,
-        ISqlSugarRepository<BlogFileEntity> blogFileRepository,IMarkdownRenderService markdownRenderer)
+    public BlogPostService(IBlogPostDomainService blogPostDomainService, ITagDomainService tagDomainService, 
+        IBlogPostRepository blogPostRepository, IMarkdownRenderService markdownRenderer,  IObjectMapper objectMapper)
     {
         _blogPostDomainService = blogPostDomainService;
         _tagDomainService = tagDomainService;
-        _tagRepository = tagRepository;
         _blogPostRepository = blogPostRepository;
-        _blogFileRepository = blogFileRepository;
         _markdownRenderer = markdownRenderer;
+        _objectMapper = objectMapper;
     }
 
-    public async Task<ApiResponse<CreateBlogPostResponse>> CreateAsync([FromForm] CreateBlogPostRequest request)
+
+    [Authorize]
+    [Permission("blog:add")]
+    public async Task<ApiResponse<CreateBlogPostOutputDto>> CreateAsync([FromForm] CreateBlogPostInputDto input)
     {
-        string? imageName = request.Image?.FileName;
-        await using var imageStream = request.Image?.OpenReadStream();  
+        string? imageName = input.Image?.FileName;
+        await using var imageStream = input.Image?.OpenReadStream();  
         
-        var tagList = request.Tags?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+        var tagList = input.Tags?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
         
         var tagIds = await _tagDomainService.CreateTagsAsync(tagList);
 
-        // 将 input 转换为 domain 层参数 DTO
-        var domainParam = new CreateBlogPostParameterDto
-        {
-            Author = request.Author,
-            Title = request.Title,
-            Summary = request.Summary,
-            Category = request.Category,
-            TagIds = tagIds,
-            BlogContent = request.BlogContent,         
-            Image = imageStream,
-            ImageName = imageName
-        };
-
         // 调用 domain service 创建 BlogPost
-        BlogPostAggregateRoot blogPost = await _blogPostDomainService.CreateBlogPostAsync(domainParam);
+        BlogPostAggregateRoot blogPost = await _blogPostDomainService.CreateBlogPostAsync(input.Title, input.BlogContent,
+            input.Author, input.Summary, imageStream, imageName, input.Category, tagIds);
 
-        var result = new CreateBlogPostResponse()
+        var result = new CreateBlogPostOutputDto()
         {
             Id = blogPost.Id,
             Title = blogPost.Title,
@@ -76,17 +63,18 @@ public class BlogPostService : ApplicationService, IBlogPostService
             .Include(x => x.Catergory)
             .ExecuteCommandAsync();
 
-        return ApiResponse<CreateBlogPostResponse>.Ok(result);
+        return ApiResponse<CreateBlogPostOutputDto>.Ok(result);
     }
 
-    public async Task<ApiResponse<GetBlogPostListResponse>> GetBlogPostListAsync(GetBlogPostListRequest request)
+
+    public async Task<ApiResponse<PagedResultDto<BlogPostListOutputDto>>> GetBlogPostListAsync(BlogPostListInputDto input)
     {
         DateTime? startTime = null;
         DateTime? endTime = null;
-
-        if (!string.IsNullOrEmpty(request.YearMonth))
+        
+        if (!string.IsNullOrEmpty(input.YearMonth))
         {
-            startTime = DateTime.ParseExact(request.YearMonth, "yyyy-MM", null);
+            startTime = DateTime.ParseExact(input.YearMonth, "yyyy-MM", null);
             endTime = startTime?.AddMonths(1).AddTicks(-1);
         }
         
@@ -96,39 +84,29 @@ public class BlogPostService : ApplicationService, IBlogPostService
             .Includes(x => x.BlogFile)
             .Includes(x => x.Tags)
             .Includes(x => x.Catergory)
-            .WhereIF(request.CategoryId != Guid.Empty, x => x.CategoryId == request.CategoryId)
+            .WhereIF(input.CategoryId != Guid.Empty, x => x.CategoryId == input.CategoryId)
             .WhereIF(startTime.HasValue, x => x.CreationTime >= startTime && x.CreationTime <= endTime)
             .OrderBy(x => x.CreationTime, OrderByType.Desc)
-            .ToPageListAsync(request.CurrentPage, request.MaxResultCount, totalCountRef);
+            .ToPageListAsync(input.CurrentPage, input.MaxResultCount, totalCountRef);
 
-        var rs = new GetBlogPostListResponse()
-        {
-            TotalCount = totalCountRef.Value,
-            
-            BlogPostList = items.Select(x => new GetBlogPostListResponse.BlogPostDetail
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Summary = x.Summary,
-                Category = x.Catergory?.CategoryName,
-                ImageUrl = x.BlogFile?.ImageUploadUrl,
-                CreationTime = x.CreationTime
-            }).ToList()
-        };
+        var rs = new PagedResultDto<BlogPostListOutputDto>(totalCountRef,
+            _objectMapper.Map<List<BlogPostAggregateRoot>, List<BlogPostListOutputDto>>(items));
 
-        return ApiResponse<GetBlogPostListResponse>.Ok(rs);
+        return ApiResponse<PagedResultDto<BlogPostListOutputDto>>.Ok(rs);
     }
 
-    public async Task<ApiResponse<GetBlogPostDetailResponse>> GetBlogPostContentAsync(GetBlogPostDetailRequest request)
+    public async Task<ApiResponse<GetBlogPostDetailOutputDto>> GetBlogPostDetailAsync(GetBlogPostDetailInputDto input)
     {
-        var blogPostDetail = new GetBlogPostDetailResponse();
+        var blogPostDetail = new GetBlogPostDetailOutputDto();
 
         try
         {
             var blogPost = await _blogPostRepository.DbQueryable.Includes(x => x.BlogFile)
-                .FirstAsync(x => x.Id == request.BlogPostId);
+                .FirstAsync(x => x.Id == input.BlogPostId);
             var blogFile = blogPost.BlogFile;
-
+            blogPost.AddViews();
+            await _blogPostRepository.UpdateAsync(blogPost);
+            
             if (blogFile == null)
             {
                 throw new UserFriendlyException("Blog content not found");
@@ -137,15 +115,37 @@ public class BlogPostService : ApplicationService, IBlogPostService
             blogPostDetail.Content = _markdownRenderer.ToHtml(blogFile.FileContent);
             blogPostDetail.Title = blogPost.Title;
             blogPostDetail.Author = blogPost.Author;
-            blogPostDetail.CreationTime = blogPost.CreationTime;
-            blogPostDetail.RevisonTime = blogPost.LastModificationTime;
+            blogPostDetail.CreationTime = blogPost.CreationTime.ToString("yyyy-MM-dd HH:mm:ss");
+            blogPostDetail.RevisonTime = blogPost.LastModificationTime?.ToString("yyyy-MM-dd HH:mm:ss");
 
         }
         catch (Exception ex)
         {
-            return ApiResponse<GetBlogPostDetailResponse>.FailWithData();
+            return ApiResponse<GetBlogPostDetailOutputDto>.FailWithData();
         }
         
-        return ApiResponse<GetBlogPostDetailResponse>.Ok(blogPostDetail);
+        return ApiResponse<GetBlogPostDetailOutputDto>.Ok(blogPostDetail);
+    }
+
+    public async Task<ApiResponse<List<GetSortedBlogPostsOutputDto>?>> GetSortedBlogPostsAsync(GetSortedBlogPostsInputDto input)
+    {
+        var query = _blogPostRepository.DbQueryable;
+
+        // 按照是否排序决定查询顺序
+        if (input.IsSorted)
+        {
+            query = query.OrderBy(x => x.CreationTime, OrderByType.Desc);
+        }
+        else
+        {
+            query = query.OrderBy(x => SqlFunc.GetRandom());
+        }
+        
+        var items = await query
+            .Select(x => new GetSortedBlogPostsOutputDto{ Id = x.Id, Title = x.Title})
+            .Take(input.Quantity)
+            .ToListAsync();
+        
+        return ApiResponse<List<GetSortedBlogPostsOutputDto>?>.Ok(items);
     }
 }

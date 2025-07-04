@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Volo.Abp.Ddd.Domain.Shared" Version="9.1.0" />
+    </ItemGroup>
+
 </Project>

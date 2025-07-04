@@ -10,6 +10,7 @@ public class CatergoryAggregateRoot: AuditedAggregateRoot<Guid>, ISoftDelete
     /// <summary>
     /// category
     /// </summary>
+    [SugarColumn(IsNullable = true)]
     public string CategoryName { get; set; } = string.Empty;
 
     /// <summary>
@@ -26,11 +27,13 @@ public class CatergoryAggregateRoot: AuditedAggregateRoot<Guid>, ISoftDelete
     /// 创建时间
     /// </summary>
     public override DateTime CreationTime { get; set; } = DateTime.Now;
-
+    
+    [Navigate(NavigateType.OneToMany, nameof(TagAggregateRoot.CategoryId))]
+    public List<TagAggregateRoot> Tags { get; set; }
 
     public CatergoryAggregateRoot() {}
 
-    public CatergoryAggregateRoot(Guid id, string categoryName, int sequenceNumber) : base(id)
+    public CatergoryAggregateRoot(Guid id, string categoryName, int sequenceNumber = 0) : base(id)
     {
         CategoryName = categoryName;
         SequenceNumber = sequenceNumber;

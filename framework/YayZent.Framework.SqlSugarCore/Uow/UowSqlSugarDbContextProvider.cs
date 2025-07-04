@@ -10,18 +10,22 @@ using YayZent.Framework.SqlSugarCore;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 using YayZent.Framework.SqlSugarCore.Uow;
 
+namespace YayZent.Framework.SqlSugarCore.Uow;
+
 public class UowSqlSugarDbContextProvider<TDbContext>(
     IUnitOfWorkManager unitOfWorkManager,
     IConnectionStringResolver connectionStringResolver,
     IServiceProvider serviceProvider,
     ICancellationTokenProvider cancellationTokenProvider,
-    ICurrentTenant currentTenant
+    ICurrentTenant currentTenant,
+    ICurrentDbContextAccessor currentDbContextAccessor
 ) : ISugarDbContextProvider<TDbContext> where TDbContext : ISqlSugarDbContext
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IUnitOfWorkManager _unitOfWorkManager = unitOfWorkManager;
     private readonly IConnectionStringResolver _connectionStringResolver = connectionStringResolver;
     private readonly ICurrentTenant _currentTenant = currentTenant;
+    private readonly ICurrentDbContextAccessor _currentDbContextAccessor = currentDbContextAccessor;
     protected readonly ICancellationTokenProvider CancellationTokenProvider = cancellationTokenProvider;
 
     public ILogger<UowSqlSugarDbContextProvider<TDbContext>> Logger { get; set; } = NullLogger<UowSqlSugarDbContextProvider<TDbContext>>.Instance;
@@ -80,6 +84,7 @@ public class UowSqlSugarDbContextProvider<TDbContext>(
 
     protected virtual async Task<string> ResolveConnectionStringAsync(string connectionStringName)
     {
+        // 如果有忽略多租户属性，则用默认租户
         if (typeof(TDbContext).IsDefined(typeof(IgnoreMultiTenancyAttribute), false))
         {
             using (_currentTenant.Change(null))

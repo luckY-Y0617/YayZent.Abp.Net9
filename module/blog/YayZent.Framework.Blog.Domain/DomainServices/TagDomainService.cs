@@ -1,4 +1,5 @@
 using OBS.Model;
+using Volo.Abp;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 using Volo.Abp.Users;
@@ -35,11 +36,11 @@ public class TagDomainService: DomainService, ITagDomainService
         return tagAggregateRoots;
     }
     
-    public async Task<List<Guid>?> CreateTagsAsync(List<string>? tags)
+    public async Task<List<Guid>> CreateTagsAsync(List<string>? tags)
     {
         if (tags == null || tags.Count == 0)
         {
-            return null;
+            throw new UserFriendlyException("新增tag列表为空");
         }
 
         // 查询数据库中已存在的标签
@@ -62,6 +63,11 @@ public class TagDomainService: DomainService, ITagDomainService
             .Where(x => tags.Contains(x.TagName))
             .Select(x => x.Id)
             .ToListAsync();
+
+        if (tagIds.Count > 0)
+        {
+            throw new UserFriendlyException("Create new tags failed");
+        }
 
         return tagIds;
     }

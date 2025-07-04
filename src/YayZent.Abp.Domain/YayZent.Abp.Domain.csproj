@@ -13,7 +13,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\framework\YayZent.Framework.Mapster\YayZent.Framework.Mapster.csproj" />
+      <ProjectReference Include="..\..\module\audit-logging\YayZent.Framework.AuditLogging.Domain\YayZent.Framework.AuditLogging.Domain.csproj" />
+      <ProjectReference Include="..\..\module\auth\YayZent.Framework.Auth.Domain\YayZent.Framework.Auth.Domain.csproj" />
+      <ProjectReference Include="..\..\module\bbs\YayZent.Framework.Bbs.Domain\YayZent.Framework.Bbs.Domain.csproj" />
       <ProjectReference Include="..\..\module\blog\YayZent.Framework.Blog.Domain\YayZent.Framework.Blog.Domain.csproj" />
+      <ProjectReference Include="..\..\module\rbac\YayZent.Framework.Rbac.Domain\YayZent.Framework.Rbac.Domain.csproj" />
+      <ProjectReference Include="..\..\module\tenant-management\YayZent.Framework.TenantManagement.Domain\YayZent.Framework.TenantManagement.Domain.csproj" />
       <ProjectReference Include="..\YayZent.Abp.Domain.Shared\YayZent.Abp.Domain.Shared.csproj" />
     </ItemGroup>
 

@@ -9,15 +9,9 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\framework\YayZent.Framework.Core.Rendering\YayZent.Framework.Core.Rendering.csproj" />
       <ProjectReference Include="..\..\..\framework\YayZent.Framework.Ddd.Application\YayZent.Framework.Ddd.Application.csproj" />
+      <ProjectReference Include="..\..\auth\YayZent.Framework.Auth.Domain.Shared\YayZent.Framework.Auth.Domain.Shared.csproj" />
       <ProjectReference Include="..\YayZent.Framework.Blog.Application.Contracts\YayZent.Framework.Blog.Application.Contracts.csproj" />
       <ProjectReference Include="..\YayZent.Framework.Blog.Domain\YayZent.Framework.Blog.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore.Http.Features" />
-      <Reference Include="Microsoft.AspNetCore.Mvc.Core">
-        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\9.0.3\Microsoft.AspNetCore.Mvc.Core.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
     <ItemGroup>

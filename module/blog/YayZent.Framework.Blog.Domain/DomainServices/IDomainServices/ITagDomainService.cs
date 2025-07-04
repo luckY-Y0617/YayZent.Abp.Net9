@@ -7,5 +7,5 @@ public interface ITagDomainService: IDomainService
 {
     Task<List<TagAggregateRoot>?> GetTagListByIdsAsync(List<Guid>? tagIds);
 
-    Task<List<Guid>?> CreateTagsAsync(List<string>? tags);
+    Task<List<Guid>> CreateTagsAsync(List<string>? tags);
 }

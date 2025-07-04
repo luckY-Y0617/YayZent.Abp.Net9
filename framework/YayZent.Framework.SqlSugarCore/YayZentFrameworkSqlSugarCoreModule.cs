@@ -53,8 +53,9 @@ public class YayZentFrameworkSqlSugarCoreModule: AbpModule
         });
 
         // 注册 SqlSugar 相关服务
+        services.TryAddScoped<ICurrentDbContextAccessor, AsyncLocalCurrentDbContextAccessor>();
         services.TryAddScoped<ISqlSugarDbClientFactory, SqlSugarDbClientFactory>();
-        services.TryAddScoped<ISqlSugarDbContext, DefaultSqlSugarDbContext>();
+        services.AddTransient<ISqlSugarDbContext, DefaultSqlSugarDbContext>();
         services.AddTransient(typeof(IRepository<>), typeof(SqlSugarRepository<>));
         services.AddTransient(typeof(IRepository<,>), typeof(SqlSugarRepository<,>));
         services.AddTransient(typeof(ISqlSugarRepository<>), typeof(SqlSugarRepository<>));
@@ -91,20 +92,25 @@ public class YayZentFrameworkSqlSugarCoreModule: AbpModule
 
         logger.LogInformation(sb.ToString());
 
+        if (options.EnableCodeFirst)
+        {
+            await CodeFirst(services);
+        }
+
         if (options.EnableDbSeed)
         {
-            CodeFirst(services);
+            await InitializeDataSeed(services);
         }
     }
     
 
-    private void CodeFirst(IServiceProvider sp)
+    private async Task CodeFirst(IServiceProvider sp)
     {
         var moduleContainer = sp.GetRequiredService<IModuleContainer>();
         var db = (sp.GetRequiredService<ISqlSugarDbContext>()).SqlSugarClient;
 
 
-        db.DbMaintenance.CreateDatabase();
+        await Task.Run(() => db.DbMaintenance.CreateDatabase());
 
         List<Type> types = new List<Type>();
         foreach (var module in moduleContainer.Modules)
@@ -116,7 +122,13 @@ public class YayZentFrameworkSqlSugarCoreModule: AbpModule
 
         if (types.Count > 0)
         {
-            db.CodeFirst.InitTables(types.ToArray());
+            await Task.Run(() => db.CodeFirst.InitTables(types.ToArray()));
         }
+    }
+
+    private async Task InitializeDataSeed(IServiceProvider serviceProvider)
+    {
+        var dataSeeder = serviceProvider.GetRequiredService<IDataSeeder>();
+        await dataSeeder.SeedAsync();
     }
 }

@@ -14,6 +14,8 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
     public bool? IsChangeTrackingEnabled  => false;
 
     public IAsyncQueryableExecuter AsyncExecuter { get; }
+    // AsyncContext.Run 可能引起死锁（尤其是在 ASP.NET Core 中）？？？。
+    
     public ISqlSugarClient DbContext => AsyncContext.Run(async () =>  await GetDbContextAsync());
     
     public ISugarQueryable<TEntity> DbQueryable => DbContext.Queryable<TEntity>();
@@ -59,12 +61,17 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task<List<TEntity>> GetPagedListAsync(int skipCount, int maxResultCount, string sorting, bool includeDetails = false,
+    public async Task<List<TEntity>> GetPagedListAsync(int skipCount, int maxResultCount, string sorting, bool includeDetails = false,
         CancellationToken cancellationToken = new CancellationToken())
     {
-        throw new NotImplementedException();
+        return await GetPageListAsync(_ => true, skipCount, maxResultCount);
     }
 
+    protected virtual async Task<List<TEntity>> GetPageListAsync(Expression<Func<TEntity, bool>> whereExpression, int pageNum, int pageSize)
+    {
+        return await (await GetSimpleDbClientAsync()).GetPageListAsync(whereExpression, new PageModel() { PageIndex = pageNum, PageSize = pageSize });
+    }
+    
     public IQueryable<TEntity> WithDetails()
     {
         throw new NotImplementedException();
@@ -96,9 +103,9 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task<TEntity> InsertAsync(TEntity entity, bool autoSave = false, CancellationToken cancellationToken = new CancellationToken())
+    public async Task<TEntity> InsertAsync(TEntity entity, bool autoSave, CancellationToken cancellationToken = new CancellationToken())
     {
-        throw new NotImplementedException();
+        return await InsertReturnEntityAsync(entity);
     }
 
     public async Task InsertManyAsync(IEnumerable<TEntity> entities, bool autoSave = false,
@@ -122,9 +129,24 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         }
     }
 
-    public Task<TEntity> UpdateAsync(TEntity entity, bool autoSave = false, CancellationToken cancellationToken = new CancellationToken())
+    public async Task<TEntity> UpdateAsync(TEntity entity, bool autoSave = false, CancellationToken cancellationToken = new CancellationToken())
     {
-        throw new NotImplementedException();
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+
+        // 使用 SqlSugar 异步更新
+        var result = await DbContext.Updateable(entity)
+            .ExecuteCommandAsync(cancellationToken);
+
+        // result 是受影响的行数，理论上应该是1
+
+        if (result == 0)
+            throw new Exception("更新失败，没有匹配到记录");
+
+        // 如果autoSave的语义是指事务提交或者其他什么操作
+        // SqlSugar默认每次ExecuteCommandAsync都会提交，这里不需要额外处理
+
+        return entity;
     }
 
     public Task UpdateManyAsync(IEnumerable<TEntity> entities, bool autoSave = false,
@@ -133,7 +155,7 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(TEntity entity, bool autoSave = false, CancellationToken cancellationToken = new CancellationToken())
+    public Task DeleteAsync(TEntity entity, bool autoSave, CancellationToken cancellationToken = new CancellationToken())
     {
         throw new NotImplementedException();
     }
@@ -219,14 +241,15 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task<TEntity> GetFirstAsync(Expression<Func<TEntity, bool>> whereExpression)
+    public async Task<TEntity?> GetFirstAsync(Expression<Func<TEntity, bool>> whereExpression)
     {
-        throw new NotImplementedException();
+        var entity = await DbQueryable.FirstAsync(whereExpression);
+        return entity;
     }
 
-    public Task<bool> AnyAsync(Expression<Func<TEntity, bool>> whereExpression)
+    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> whereExpression)
     {
-        throw new NotImplementedException();
+        return await DbQueryable.AnyAsync(whereExpression);
     }
 
     public Task<long> CountAsync(Expression<Func<TEntity, bool>> whereExpression)
@@ -290,9 +313,9 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task<Entity> InsertReturnEntityAsync(TEntity entity)
+    public async Task<TEntity> InsertReturnEntityAsync(TEntity insertObj)
     {
-        throw new NotImplementedException();
+        return await (await GetSimpleDbClientAsync()).InsertReturnEntityAsync(insertObj);
     }
 
     public Task<bool> DeleteAsync(TEntity entity)
@@ -305,9 +328,11 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> deleteExpression)
+    public async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> deleteExpression)
     {
-        throw new NotImplementedException();
+        var result = await DbContext.Deleteable<TEntity>().Where(deleteExpression).ExecuteCommandAsync();
+        
+        return result > 0;
     }
 
     public Task<bool> DeleteByIdAsync(dynamic id)

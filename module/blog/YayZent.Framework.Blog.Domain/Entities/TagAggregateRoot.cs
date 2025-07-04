@@ -17,6 +17,8 @@ public class TagAggregateRoot : AuditedAggregateRoot<Guid>
     /// </summary>
     public int SequenceNumber { get; set; } = 0;
     
+    public Guid CategoryId { get; set; }
+    
     [Navigate(typeof(BlogPostAggregateRoot), nameof(BlogPostTagEntity.TagId), nameof(BlogPostTagEntity.BlogPostId))]
     public List<BlogPostAggregateRoot>? BlogPosts { get; set; }
     

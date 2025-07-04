@@ -85,7 +85,7 @@ namespace YayZent.Framework.SqlSugarCore.Interceptors
             switch (propName)
             {
                 case nameof(IAuditedObject.LastModificationTime):
-                    entityInfo.SetValue(oldValue is DateTime dt && dt > DateTime.MinValue ? dt : DateTime.MinValue);
+                    entityInfo.SetValue(oldValue is DateTime dt && dt > DateTime.MinValue ? dt : DateTime.Now);
                     break;
 
                 case nameof(IAuditedObject.CreatorId) when propType == typeof(Guid):

@@ -112,4 +112,9 @@ public class BlogPostAggregateRoot : AuditedAggregateRoot<Guid>, ISoftDelete
     {
         Comments = comments;
     }
+
+    public void AddViews()
+    {
+        Views++;
+    }
 }

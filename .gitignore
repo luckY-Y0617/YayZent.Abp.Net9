@@ -31,3 +31,5 @@ src/YayZent.Abp.Web/appsettings.Development.json
 
 # Ignore appsettings.json if it contains local environment configurations
 src/YayZent.Abp.Web/appsettings.json
+
+*.assets.cache

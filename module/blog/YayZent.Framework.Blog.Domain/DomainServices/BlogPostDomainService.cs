@@ -4,8 +4,6 @@ using Volo.Abp.Users;
 using YayZent.Framework.Blog.Domain.DomainServices.IDomainServices;
 using YayZent.Framework.Blog.Domain.Entities;
 using YayZent.Framework.Blog.Domain.Repositories;
-using YayZent.Framework.Blog.Domain.Shared.Dtos;
-using YayZent.Framework.Blog.Domain.Shared.Dtos.Category;
 using YayZent.Framework.Core.Helper;
 using YayZent.Framework.Core.File.Abstractions;
 using YayZent.Framework.Core.File.Enums;
@@ -46,23 +44,24 @@ public class BlogPostDomainService: DomainService, IBlogPostDomainService
         _categoryDomainService = categoryDomainService;
     }
     
-    public async Task<BlogPostAggregateRoot> CreateBlogPostAsync(CreateBlogPostParameterDto param)
+    public async Task<BlogPostAggregateRoot> CreateBlogPostAsync(string title, string blogContent, string author, 
+        string? summary, Stream? image, string? imageName, string categoryName, List<Guid>? tagIds)
     {
         Guid blogPostId = _guidGenerator.Create();
         Guid fileId = _guidGenerator.Create();
         DateTime today = DateTime.Now;
         String key = $"{today:yyyy/MM/dd}/{blogPostId}";
-        String blogKey = $"{key}/{param.Title}.md";
-        String imageKey = $"{key}/{param.ImageName}";
-        Stream contentStream = StreamHelper.StringToStream(param.BlogContent);
+        String blogKey = $"{key}/{title}.md";
+        String imageKey = $"{key}/{imageName}";
+        Stream contentStream = StreamHelper.StringToStream(blogContent);
 
-        BlogPostAggregateRoot blogPost = new BlogPostAggregateRoot(blogPostId, param.Author,param.Title, param.Summary);
+        BlogPostAggregateRoot blogPost = new BlogPostAggregateRoot(blogPostId, author, title, summary);
         
-        BlogFileEntity blogFile = await CreateBlogFileAsync(fileId, param.BlogContent, blogKey, imageKey,contentStream, param.Image);
+        BlogFileEntity blogFile = await CreateBlogFileAsync(fileId, blogContent, blogKey, imageKey,contentStream, image);
         blogPost.SetFile(blogFile); 
-        var category = await _categoryDomainService.CreateOrGetCategoryAsync(new CreateCategoryParameterDto(){CategoryName = param.Category});
+        var category = await _categoryDomainService.CreateOrGetCategoryAsync(categoryName, 0);
         blogPost.SetCategory(category);
-        var tagList = await _tagDomainService.GetTagListByIdsAsync(param.TagIds);
+        var tagList = await _tagDomainService.GetTagListByIdsAsync(tagIds);
         blogPost.SetTags(tagList);
         
         await CreateBlogPostTagAsync(blogPostId, tagList);
