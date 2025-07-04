@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\framework\YayZent.Framework.AspNetCore\YayZent.Framework.AspNetCore.csproj" />
+      <ProjectReference Include="..\..\..\framework\YayZent.Framework.Core.Email\YayZent.Framework.Core.Email.csproj" />
+      <ProjectReference Include="..\..\..\framework\YayZent.Framework.Core.Sms\YayZent.Framework.Core.Sms.csproj" />
+      <ProjectReference Include="..\..\..\framework\YayZent.Framework.Ddd.Application\YayZent.Framework.Ddd.Application.csproj" />
+      <ProjectReference Include="..\YayZent.Framework.Rbac.Application.Contracts\YayZent.Framework.Rbac.Application.Contracts.csproj" />
+      <ProjectReference Include="..\YayZent.Framework.Rbac.Domain\YayZent.Framework.Rbac.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Lazy.Captcha.Core" Version="2.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+</Project>

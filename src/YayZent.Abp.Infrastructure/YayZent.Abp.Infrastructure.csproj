@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\module\auth\YayZent.Framework.Auth.Infrastructure\YayZent.Framework.Auth.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\module\bbs\YayZent.Framework.Bbs.Infrastructure\YayZent.Framework.Bbs.Infrastructure.csproj" />
+      <ProjectReference Include="..\YayZent.Abp.Application.Contracts\YayZent.Abp.Application.Contracts.csproj" />
+      <ProjectReference Include="..\YayZent.Abp.Domain.Shared\YayZent.Abp.Domain.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

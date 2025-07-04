@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\framework\Yayzent.Framework.BackgroundWorkers.Hangfire\Yayzent.Framework.BackgroundWorkers.Hangfire.csproj" />
+      <ProjectReference Include="..\..\..\framework\YayZent.Framework.Ddd.Application\YayZent.Framework.Ddd.Application.csproj" />
+      <ProjectReference Include="..\YayZent.Framework.Bbs.Application.Contracts\YayZent.Framework.Bbs.Application.Contracts.csproj" />
+      <ProjectReference Include="..\YayZent.Framework.Bbs.Domain\YayZent.Framework.Bbs.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Volo.Abp.BackgroundJobs.HangFire" Version="9.1.0" />
+      <PackageReference Include="Volo.Abp.Caching.StackExchangeRedis" Version="9.1.0" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\framework\YayZent.Framework.SqlSugarCore\YayZent.Framework.SqlSugarCore.csproj" />
+      <ProjectReference Include="..\YayZent.Framework.Bbs.Domain\YayZent.Framework.Bbs.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\YayZent.Framework.Bbs.Application.Contracts\YayZent.Framework.Bbs.Application.Contracts.csproj" />
+      <ProjectReference Include="..\YayZent.Framework.Bbs.Domain.Shared\YayZent.Framework.Bbs.Domain.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Volo.Abp.Caching.StackExchangeRedis" Version="9.1.0" />
+    </ItemGroup>
+
+</Project>

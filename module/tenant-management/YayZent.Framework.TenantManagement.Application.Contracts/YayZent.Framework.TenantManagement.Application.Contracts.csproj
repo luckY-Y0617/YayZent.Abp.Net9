@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Volo.Abp.TenantManagement.Domain.Shared" Version="9.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\framework\YayZent.Framework.Ddd.Application.Contracts\YayZent.Framework.Ddd.Application.Contracts.csproj" />
+      <ProjectReference Include="..\..\..\framework\YayZent.Framework.SqlSugarCore.Abstractions\YayZent.Framework.SqlSugarCore.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
