@@ -7,7 +7,6 @@ using YayZent.Framework.Core.Attributes;
 
 namespace YayZent.Framework.AuditLogging.Domain.Entities;
 
-[SystemTable]
 [SugarTable("EntityChange")]
 [SugarIndex($"index_{nameof(AuditLogId)}", nameof(AuditLogId), OrderByType.Asc)]
 [SugarIndex($"index_{nameof(TenantId)}_{nameof(EntityId)}", nameof(TenantId), OrderByType.Asc, nameof(EntityTypeFullName), OrderByType.Asc, nameof(EntityId), OrderByType.Asc)]

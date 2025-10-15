@@ -1,6 +1,6 @@
-namespace YayZent.Framework.Blog.Application.Contracts.Dtos;
+namespace YayZent.Framework.Blog.Application.Contracts.Dtos.BlogPost;
 
 public class GetBlogPostDetailInputDto
 {
-    public Guid BlogPostId { get; set; }
+    public Guid BlogId { get; set; }
 }

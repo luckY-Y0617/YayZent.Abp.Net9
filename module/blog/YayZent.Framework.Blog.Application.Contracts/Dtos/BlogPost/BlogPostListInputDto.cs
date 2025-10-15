@@ -6,6 +6,8 @@ public class BlogPostListInputDto: PagedAndSortedResultRequestDto
 {
     public Guid CategoryId { get; set; }
     
+    public Guid? TagId { get; set; }
+    
     public string? YearMonth { get; set; }
     
     public required int CurrentPage { get; set; } = 1;

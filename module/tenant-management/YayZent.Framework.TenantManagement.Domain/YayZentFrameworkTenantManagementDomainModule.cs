@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Volo.Abp.Data;
 using Volo.Abp.Domain;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
@@ -18,6 +17,5 @@ public class YayZentFrameworkTenantManagementDomainModule:AbpModule
     {
         var services = context.Services;
         services.Replace(new ServiceDescriptor(typeof(ITenantStore), typeof(CustomTenantStore), ServiceLifetime.Transient));
-        services.Replace(new ServiceDescriptor(typeof(IConnectionStringResolver), typeof(CustomMultiTenantConnectionStringResolver), ServiceLifetime.Transient));
     }
 }

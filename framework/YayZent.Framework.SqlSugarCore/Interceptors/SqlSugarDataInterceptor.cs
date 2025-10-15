@@ -3,9 +3,9 @@ using SqlSugar;
 using Volo.Abp.DependencyInjection;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 
-namespace YayZent.Framework.SqlSugarCore;
+namespace YayZent.Framework.SqlSugarCore.Interceptors;
 
-public class SqlSugarDataInterceptor(IAbpLazyServiceProvider lazyServiceProvider): ISqlSugarDbContextInterceptor
+public abstract class SqlSugarDataInterceptor(IAbpLazyServiceProvider lazyServiceProvider): ISqlSugarDbContextInterceptor
 {
     public int ExecutionOrder => 0;
     
@@ -21,7 +21,7 @@ public class SqlSugarDataInterceptor(IAbpLazyServiceProvider lazyServiceProvider
 
     protected virtual void CustomDataFilter(ISqlSugarClient sqlSugarClient){ }
 
-    public void AfterDataExecuted(object oldValue, DataAfterModel entityInfo) { }
+    public virtual void AfterDataExecuted(object oldValue, DataAfterModel entityInfo) { }
 
     public virtual void OnDataExecuting(object oldValue, DataFilterModel entityInfo) { }
 

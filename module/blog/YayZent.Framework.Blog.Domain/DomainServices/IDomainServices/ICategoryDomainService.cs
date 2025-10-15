@@ -5,5 +5,7 @@ namespace YayZent.Framework.Blog.Domain.DomainServices.IDomainServices;
 
 public interface ICategoryDomainService: IDomainService
 {
-    Task<CatergoryAggregateRoot> CreateOrGetCategoryAsync(string categoryName, int sequenceNumber);
+    Task<CategoryAggregateRoot> CreateOrGetCategoryAsync(string categoryName, int sequenceNumber);
+
+    Task<CategoryAggregateRoot> GetAsync(Guid id);
 }

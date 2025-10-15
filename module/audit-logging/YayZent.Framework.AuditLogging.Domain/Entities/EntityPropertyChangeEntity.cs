@@ -7,7 +7,6 @@ using YayZent.Framework.Core.Attributes;
 
 namespace YayZent.Framework.AuditLogging.Domain.Entities;
 
-[SystemTable]
 [SugarTable("EntityPropertyChange")]
 [SugarIndex($"index_{nameof(EntityChangeId)}", nameof(EntityChangeId), OrderByType.Asc)]
 public class EntityPropertyChangeEntity: Entity<Guid>, IMultiTenant

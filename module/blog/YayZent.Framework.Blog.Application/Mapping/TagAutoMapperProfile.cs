@@ -9,5 +9,9 @@ public class TagAutoMapperProfile: Profile
     public TagAutoMapperProfile()
     {
         CreateMap<TagAggregateRoot, TagGetListOutputDto>();
+        CreateMap<TagCreateDto, TagAggregateRoot>();
+        CreateMap<TagAggregateRoot, TagGetOutputDto>();
+        CreateMap<TagUpdateDto, TagAggregateRoot>();
     }
+    
 }

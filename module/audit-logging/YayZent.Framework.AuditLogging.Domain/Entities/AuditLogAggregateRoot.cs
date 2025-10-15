@@ -8,7 +8,6 @@ using YayZent.Framework.Core.Attributes;
 
 namespace YayZent.Framework.AuditLogging.Domain.Entities;
 
-[SystemTable]
 [DisableAuditing]
 [SugarTable("AuditLog")]
 [SugarIndex($"index_{nameof(ExecutionTime)}", nameof(TenantId), OrderByType.Asc, nameof(ExecutionTime), OrderByType.Asc)]

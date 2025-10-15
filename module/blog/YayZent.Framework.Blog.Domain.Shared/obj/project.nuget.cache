@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "CA5z6kR1N2E=",
+  "dgSpecHash": "k1PoerjusOM=",
   "success": true,
   "projectFilePath": "D:\\programs\\VS2022\\repos\\YayZent.Abp.Net9\\module\\blog\\YayZent.Framework.Blog.Domain.Shared\\YayZent.Framework.Blog.Domain.Shared.csproj",
   "expectedPackageFiles": [
@@ -72,7 +72,10 @@
     "C:\\Users\\luckYY\\.nuget\\packages\\volo.abp.threading\\9.1.0\\volo.abp.threading.9.1.0.nupkg.sha512",
     "C:\\Users\\luckYY\\.nuget\\packages\\volo.abp.uow\\9.1.0\\volo.abp.uow.9.1.0.nupkg.sha512",
     "C:\\Users\\luckYY\\.nuget\\packages\\volo.abp.validation.abstractions\\9.1.0\\volo.abp.validation.abstractions.9.1.0.nupkg.sha512",
-    "C:\\Users\\luckYY\\.nuget\\packages\\volo.abp.virtualfilesystem\\9.1.0\\volo.abp.virtualfilesystem.9.1.0.nupkg.sha512"
+    "C:\\Users\\luckYY\\.nuget\\packages\\volo.abp.virtualfilesystem\\9.1.0\\volo.abp.virtualfilesystem.9.1.0.nupkg.sha512",
+    "C:\\Users\\luckYY\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.9\\microsoft.windowsdesktop.app.ref.9.0.9.nupkg.sha512",
+    "C:\\Users\\luckYY\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.9\\microsoft.netcore.app.ref.9.0.9.nupkg.sha512",
+    "C:\\Users\\luckYY\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.9\\microsoft.aspnetcore.app.ref.9.0.9.nupkg.sha512"
   ],
   "logs": []
 }

@@ -13,6 +13,10 @@ using Volo.Abp.Domain;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Modularity;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.MultiTenancy.ConfigurationStore;
+using YayZent.Framework.Core.Attributes;
+using YayZent.Framework.Core.Extensions;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 using YayZent.Framework.SqlSugarCore.Extensions;
 using YayZent.Framework.SqlSugarCore.Factories;
@@ -24,7 +28,8 @@ using DbType = SqlSugar.DbType;
 namespace YayZent.Framework.SqlSugarCore;
 
 [DependsOn(typeof(YayZentFrameworkSqlSugarCoreAbstrationsModule),
-    typeof(AbpDddDomainModule))]
+    typeof(AbpDddDomainModule),
+    typeof(AbpMultiTenancyModule))]
 public class YayZentFrameworkSqlSugarCoreModule: AbpModule
 {
     public override Task ConfigureServicesAsync(ServiceConfigurationContext context)
@@ -69,6 +74,31 @@ public class YayZentFrameworkSqlSugarCoreModule: AbpModule
         {
             options.ConnectionStrings.Default = dbConnOptions.Url;
         });
+
+        if (dbConnOptions.EnabledSaasMultiTenancy)
+        {
+            Configure<AbpDefaultTenantStoreOptions>(options => 
+            {
+                var tenants = options.Tenants.ToList();
+                
+                tenants.ForEach(tenant => tenant.NormalizedName = tenant.Name.GetNormalizedName());
+                
+                // 添加默认租户
+                tenants.Insert(0, new TenantConfiguration
+                {
+                    Id = Guid.Empty,
+                    Name = ConnectionStrings.DefaultConnectionStringName + '@' + dbConnOptions.DbType.ToString(),
+                    NormalizedName = ConnectionStrings.DefaultConnectionStringName,
+                    ConnectionStrings = new ConnectionStrings 
+                    { 
+                        { ConnectionStrings.DefaultConnectionStringName, dbConnOptions.Url } 
+                    },
+                    IsActive = true
+                });
+
+                options.Tenants = tenants.ToArray();
+            });
+        }
     
         services.AddDbContext<DefaultSqlSugarDataInterceptor>();
 
@@ -94,7 +124,7 @@ public class YayZentFrameworkSqlSugarCoreModule: AbpModule
 
         if (options.EnableCodeFirst)
         {
-            await CodeFirst(services);
+            await CodeFirstSystemTables(services);
         }
 
         if (options.EnableDbSeed)
@@ -103,21 +133,19 @@ public class YayZentFrameworkSqlSugarCoreModule: AbpModule
         }
     }
     
-
-    private async Task CodeFirst(IServiceProvider sp)
+    private async Task CodeFirstSystemTables(IServiceProvider sp)
     {
         var moduleContainer = sp.GetRequiredService<IModuleContainer>();
-        var db = (sp.GetRequiredService<ISqlSugarDbContext>()).SqlSugarClient;
-
+        var db = sp.GetRequiredService<ISqlSugarDbContext>().SqlSugarClient;
 
         await Task.Run(() => db.DbMaintenance.CreateDatabase());
-
         List<Type> types = new List<Type>();
         foreach (var module in moduleContainer.Modules)
         {
-            types.AddRange(module.Assembly.GetTypes().Where(type => type.GetCustomAttribute<IgnoreCodeFirstAttribute>() is null 
-                                                                    && type.GetCustomAttribute<SugarTable>() is not null 
-                                                                    && type.GetCustomAttribute<SplitTableAttribute>() is null));
+            types.AddRange(module.Assembly.GetTypes()
+                    .Where(x => x.GetCustomAttribute<SplitTableAttribute>() is null
+                                && x.GetCustomAttribute<IgnoreCodeFirstAttribute>() is null
+                                && x.GetCustomAttribute<SugarTable>() is not null));
         }
 
         if (types.Count > 0)

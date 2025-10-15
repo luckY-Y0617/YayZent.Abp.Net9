@@ -1,5 +1,6 @@
 using SqlSugar;
 using Volo.Abp;
+using Volo.Abp.Threading;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 using YayZent.Framework.SqlSugarCore.Factories;
 
@@ -18,15 +19,15 @@ namespace YayZent.Framework.SqlSugarCore
         {
             _sqlSugarDbClientFactory = sqlSugarDbClientFactory;
             _backupDirectory = backupDirectory;
-            SqlSugarClient = _sqlSugarDbClientFactory.Init();
+            SqlSugarClient = AsyncHelper.RunSync(() => _sqlSugarDbClientFactory.InitAsync()) ;
         }
 
         // 切换数据库上下文
-        public IDisposable Use(SqlSugarDbContextCreationContext creationContext)
+        public async Task<IDisposable> Use(SqlSugarDbContextCreationContext creationContext)
         {
             var parentSqlSugarClient = SqlSugarClient; // 保存当前的 DbContext
 
-            var sqlSugarClient = _sqlSugarDbClientFactory.Create(creationContext);
+            var sqlSugarClient = await _sqlSugarDbClientFactory.CreateAsync(creationContext);
             SqlSugarClient = sqlSugarClient;
 
             return new DisposeAction(() =>

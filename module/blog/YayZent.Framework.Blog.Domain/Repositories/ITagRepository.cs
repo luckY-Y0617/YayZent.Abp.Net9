@@ -3,7 +3,7 @@ using YayZent.Framework.SqlSugarCore.Abstractions;
 
 namespace YayZent.Framework.Blog.Domain.Repositories;
 
-public interface ITagRepository : ISqlSugarRepository<TagAggregateRoot>
+public interface ITagRepository : ISqlSugarRepository<TagAggregateRoot, Guid>
 {
     Task<List<TagAggregateRoot>?> AddOrUpdateTagsAsync(List<string> tags);
 

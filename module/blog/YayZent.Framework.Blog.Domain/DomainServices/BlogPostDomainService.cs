@@ -1,3 +1,4 @@
+using Volo.Abp;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 using Volo.Abp.Users;
@@ -45,52 +46,41 @@ public class BlogPostDomainService: DomainService, IBlogPostDomainService
     }
     
     public async Task<BlogPostAggregateRoot> CreateBlogPostAsync(string title, string blogContent, string author, 
-        string? summary, Stream? image, string? imageName, string categoryName, List<Guid>? tagIds)
+        string? summary, Guid categoryId, List<Guid>? tagIds)
     {
         Guid blogPostId = _guidGenerator.Create();
-        Guid fileId = _guidGenerator.Create();
-        DateTime today = DateTime.Now;
-        String key = $"{today:yyyy/MM/dd}/{blogPostId}";
-        String blogKey = $"{key}/{title}.md";
-        String imageKey = $"{key}/{imageName}";
-        Stream contentStream = StreamHelper.StringToStream(blogContent);
-
-        BlogPostAggregateRoot blogPost = new BlogPostAggregateRoot(blogPostId, author, title, summary);
         
-        BlogFileEntity blogFile = await CreateBlogFileAsync(fileId, blogContent, blogKey, imageKey,contentStream, image);
+        BlogPostAggregateRoot blogPost = new BlogPostAggregateRoot(blogPostId, author, title, summary);
+
+        BlogFileEntity blogFile = new BlogFileEntity(_guidGenerator.Create(), blogContent);
         blogPost.SetFile(blogFile); 
-        var category = await _categoryDomainService.CreateOrGetCategoryAsync(categoryName, 0);
+        var category = await _categoryDomainService.GetAsync(categoryId);
         blogPost.SetCategory(category);
+        
         var tagList = await _tagDomainService.GetTagListByIdsAsync(tagIds);
         blogPost.SetTags(tagList);
-        
         await CreateBlogPostTagAsync(blogPostId, tagList);
 
         return blogPost;
     }
-    
 
-    private async Task<BlogFileEntity> CreateBlogFileAsync(Guid fileId, string fileContent,string blogkey, string imagekey, Stream content, Stream? image)
+    public async Task<BlogPostAggregateRoot> UpdateBlogPostAsync(BlogPostAggregateRoot blogPost, string title, string author,
+        string? summary, Guid categoryId, List<Guid>? tagIds)
     {
-        Uri? fileBackUpUrl = null;
-        Uri? fileUploadUrl = null;
-        Uri? imageBackUpUrl = null;
-        Uri? imageUploadUrl = null;
-        long fileSizeInBytes = content.Length + (image?.Length ?? 0);
-        if (image?.Length > 0)
-        {
-            (imageBackUpUrl, imageUploadUrl) = await UploadFileAsync(imagekey, image);
-        }
-
-        if (content?.Length > 0)
-        {
-            (fileBackUpUrl, fileUploadUrl) = await UploadFileAsync(blogkey, content);
-        }
+        blogPost.Title = title;
+        blogPost.Author = author;
+        blogPost.Summary = summary;
         
-        var blogfile = new BlogFileEntity(fileId, fileSizeInBytes, fileContent ,fileBackUpUrl, fileUploadUrl,
-            imageUploadUrl, imageBackUpUrl);
-        return blogfile;
+        var category = await _categoryDomainService.GetAsync(categoryId);
+        blogPost.SetCategory(category);
+        
+        var tagList = await _tagDomainService.GetTagListByIdsAsync(tagIds);
+        blogPost.SetTags(tagList);
+        await CreateBlogPostTagAsync(blogPost.Id, tagList);
+
+        return blogPost;
     }
+
 
     private async Task CreateBlogPostTagAsync(Guid blogPostId, List<TagAggregateRoot>? tags)
     {
@@ -106,15 +96,4 @@ public class BlogPostDomainService: DomainService, IBlogPostDomainService
         await _blogPostTagRepository.InsertManyAsync(blogPostTagEntities);
     }
 
-    private async Task<(Uri, Uri)> UploadFileAsync(string key, Stream content)
-    {
-        var backupStorageClient = _fileClientResolver.Resolve(StorageType.Local, "Local");
-        var uploadStorageClient = _fileClientResolver.Resolve(StorageType.Obs, "HuaWeiYun");
-        content.Position = 0;
-        Uri backUpUrl = await backupStorageClient.SaveFileAsync(key, content);
-        content.Position = 0;
-        Uri uploadUrl = await uploadStorageClient.SaveFileAsync(key, content);
-        return (backUpUrl, uploadUrl);
-    }
-    
 }

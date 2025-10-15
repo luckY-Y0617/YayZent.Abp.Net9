@@ -1,9 +1,12 @@
 using System.Linq.Expressions;
 using Nito.AsyncEx;
 using SqlSugar;
+using Volo.Abp;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Linq;
+using YayZent.Framework.Core.Helper;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 
 namespace YayZent.Framework.SqlSugarCore.Repositories;
@@ -139,20 +142,18 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
             .ExecuteCommandAsync(cancellationToken);
 
         // result 是受影响的行数，理论上应该是1
-
         if (result == 0)
             throw new Exception("更新失败，没有匹配到记录");
 
         // 如果autoSave的语义是指事务提交或者其他什么操作
         // SqlSugar默认每次ExecuteCommandAsync都会提交，这里不需要额外处理
-
         return entity;
     }
 
-    public Task UpdateManyAsync(IEnumerable<TEntity> entities, bool autoSave = false,
+    public async Task UpdateManyAsync(IEnumerable<TEntity> entities, bool autoSave = false,
         CancellationToken cancellationToken = new CancellationToken())
     {
-        throw new NotImplementedException();
+        await UpdateRangeAsync(entities.ToList());
     }
 
     public Task DeleteAsync(TEntity entity, bool autoSave, CancellationToken cancellationToken = new CancellationToken())
@@ -166,10 +167,10 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task DeleteManyAsync(IEnumerable<TEntity> entities, bool autoSave = false,
+    public async Task DeleteManyAsync(IEnumerable<TEntity> entities, bool autoSave = false,
         CancellationToken cancellationToken = new CancellationToken())
     {
-        throw new NotImplementedException();
+        await DeleteAsync(entities.ToList());
     }
 
     public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, bool includeDetails = true,
@@ -323,16 +324,30 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeleteAsync(List<TEntity> entities)
+    public async Task<bool> DeleteAsync(List<TEntity> entities)
     {
-        throw new NotImplementedException();
+        if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+        {
+            entities.ForEach(e => ReflexHelper.SetModelValue(nameof(ISoftDelete.IsDeleted), true, e));
+            return await (await GetSimpleDbClientAsync()).UpdateRangeAsync(entities);
+        }
+        else
+        {
+            return await (await GetSimpleDbClientAsync()).DeleteAsync(entities);
+        }
     }
 
     public async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> deleteExpression)
     {
-        var result = await DbContext.Deleteable<TEntity>().Where(deleteExpression).ExecuteCommandAsync();
-        
-        return result > 0;
+        try
+        {
+            var result = await DbContext.Deleteable<TEntity>().Where(deleteExpression).ExecuteCommandAsync();
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+        return true;
     }
 
     public Task<bool> DeleteByIdAsync(dynamic id)
@@ -340,10 +355,56 @@ public class SqlSugarRepository<TEntity>(ISugarDbContextProvider<ISqlSugarDbCont
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeleteByIdsAsync(dynamic ids)
+    public async Task<bool> DeleteByIdsAsync(dynamic[] ids)
     {
-        throw new NotImplementedException();
+        if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+        {
+            var simpleClient = (await GetSimpleDbClientAsync());
+            var entities = await simpleClient.AsQueryable().In(ids).ToListAsync();
+            if (entities.Count == 0)
+            {
+                return false;
+            }
+            //反射赋值
+            entities.ForEach(e => ReflexHelper.SetModelValue(nameof(ISoftDelete.IsDeleted), true, e));
+            return await UpdateRangeAsync(entities);
+        }
+        else
+        {
+            return await (await GetSimpleDbClientAsync()).DeleteByIdAsync(ids);
+        }
     }
+    
+    public virtual async Task<bool> UpdateAsync(TEntity entity)
+    {
+        if (typeof(TEntity).IsAssignableTo<IHasConcurrencyStamp>())//带版本号乐观锁更新
+        {
+            try
+            {
+                int num =  await (await GetSimpleDbClientAsync())
+                    .Context.Updateable(entity).ExecuteCommandWithOptLockAsync(true);
+                return num>0;
+            }
+            catch (VersionExceptions ex)
+            {
+ 
+                throw new AbpDbConcurrencyException($"{ex.Message}[更新失败：ConcurrencyStamp不是最新版本],entityInfo：{entity}", ex);
+            }
+        }
+        return await (await GetSimpleDbClientAsync()).UpdateAsync(entity);
+    }
+
+    public virtual async Task<bool> UpdateRangeAsync(List<TEntity> entities)
+    {
+        return await (await GetSimpleDbClientAsync()).UpdateRangeAsync(entities);
+    }
+
+    public virtual async Task<bool> UpdateAsync(Expression<Func<TEntity, TEntity>> columns, Expression<Func<TEntity, bool>> predicate)
+    {
+        return await (await GetSimpleDbClientAsync()).UpdateAsync(columns, predicate);
+    }
+
+
     #endregion
 
 
@@ -375,9 +436,9 @@ public class SqlSugarRepository<TEntity, TKey>(ISugarDbContextProvider<ISqlSugar
         throw new NotImplementedException();
     }
 
-    public Task DeleteManyAsync(IEnumerable<TKey> ids, bool autoSave = false,
+    public async Task DeleteManyAsync(IEnumerable<TKey> ids, bool autoSave = false,
         CancellationToken cancellationToken = new CancellationToken())
     {
-        throw new NotImplementedException();
+        await DeleteByIdsAsync(ids.Select(x => (object)x).ToArray());
     }
 }

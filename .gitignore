@@ -33,3 +33,4 @@ src/YayZent.Abp.Web/appsettings.Development.json
 src/YayZent.Abp.Web/appsettings.json
 
 *.assets.cache
+yayzent.admin.tar

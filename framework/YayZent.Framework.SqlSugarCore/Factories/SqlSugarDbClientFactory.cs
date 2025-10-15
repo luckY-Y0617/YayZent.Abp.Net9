@@ -1,28 +1,31 @@
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SqlSugar;
+using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.Threading;
+using YayZent.Framework.Core.Extensions;
 using YayZent.Framework.SqlSugarCore.Abstractions;
-using Check = Volo.Abp.Check;
 
 namespace YayZent.Framework.SqlSugarCore.Factories;
 
-public class SqlSugarDbClientFactory(IAbpLazyServiceProvider lazyServiceProvider): ISqlSugarDbClientFactory
+public class SqlSugarDbClientFactory(IAbpLazyServiceProvider lazyServiceProvider, ILogger<SqlSugarDbClientFactory> logger): ISqlSugarDbClientFactory
 {
     private readonly IAbpLazyServiceProvider _lazyServiceProvider = lazyServiceProvider;
+    private readonly ILogger<SqlSugarDbClientFactory> _logger = logger;
     private DbConnOptions DbConnOptions => _lazyServiceProvider.LazyGetRequiredService<IOptions<DbConnOptions>>().Value;
     private ISerializeService SerializeService => _lazyServiceProvider.LazyGetRequiredService<ISerializeService>();
+    private TenantConfigurationWrapper TenantConfigurationWrapper => _lazyServiceProvider.LazyGetRequiredService<TenantConfigurationWrapper>();
     private IEnumerable<ISqlSugarDbContextInterceptor> SqlSugarInterceptors => _lazyServiceProvider.LazyGetRequiredService<IEnumerable<ISqlSugarDbContextInterceptor>>();
 
-    public ISqlSugarClient Init()
+    public async Task<ISqlSugarClient> InitAsync()
     {
-        var connectionString = GetCurrentConnectionString();
+        var dbContextCreationContext = await GetCurrentConnectionString();
         var connectionConfig = BuildConnectionConfig(action: options =>
         {
-            options.ConnectionString = connectionString;
-            options.DbType =  GetCurrentDbType();
+            options.ConnectionString = dbContextCreationContext.ConnectionString;
+            options.DbType =  dbContextCreationContext.DbType;
         });
         
         var sqlSugarClient = new SqlSugarClient(connectionConfig);
@@ -32,36 +35,39 @@ public class SqlSugarDbClientFactory(IAbpLazyServiceProvider lazyServiceProvider
         return sqlSugarClient;
     }
 
-    public ISqlSugarClient Create(SqlSugarDbContextCreationContext config)
+    public async Task<ISqlSugarClient> CreateAsync(SqlSugarDbContextCreationContext config)
     {
         var connectionConfig = BuildConnectionConfig(action: options =>
         {
             options.ConnectionString = config.ConnectionString;
             options.DbType = config.DbType;
         });
-        var sqlSugarClient = new SqlSugarClient(connectionConfig);
-        
-        SetDbAop(sqlSugarClient);
-        
-        return sqlSugarClient;
-    }
-    
-    protected DbType GetCurrentDbType()
-    {
-        return DbType.MySql;
-    }
-    
-    protected string GetCurrentConnectionString()
-    {
-        // 根据当前租户，查出真正要用的连接字符串
-        var connectionStringResolver = _lazyServiceProvider.LazyGetRequiredService<IConnectionStringResolver>();
-        var connectionString = AsyncHelper.RunSync(() => connectionStringResolver.ResolveAsync());
 
-        if (connectionString.IsNullOrWhiteSpace())
+        var sqlSugarClient = new SqlSugarClient(connectionConfig);
+
+        SetDbAop(sqlSugarClient);
+
+        return await Task.FromResult(sqlSugarClient);
+    }
+
+    
+    private async Task<SqlSugarDbContextCreationContext> GetCurrentConnectionString()
+    {
+        if (!DbConnOptions.EnabledSaasMultiTenancy)
         {
-            Check.NotNull(DbConnOptions.Url, "数据库连接字符串未配置");
+            _logger.LogInformation("未开启多租户，使用默认连接");
+            return new SqlSugarDbContextCreationContext(DbConnOptions.Url, DbConnOptions.DbType);
         }
-        return connectionString;
+        
+        // 根据当前租户，查出真正要用的连接字符串
+        var tenantConfiguration = await TenantConfigurationWrapper.GetAsync();
+
+        if (tenantConfiguration == null)
+        {
+            throw new BusinessException("tenant is not configured");
+        }
+
+        return new SqlSugarDbContextCreationContext(tenantConfiguration.GetCurrentConnectionString(), tenantConfiguration.GetCurrentDbType());
     }
 
     protected ConnectionConfig BuildConnectionConfig(Action<ConnectionConfig>? action = null)
@@ -69,10 +75,6 @@ public class SqlSugarDbClientFactory(IAbpLazyServiceProvider lazyServiceProvider
         var dbConnOptions = DbConnOptions;
 
         #region 组装Options
-        if (dbConnOptions.DbType is null)
-        {
-            throw new ArgumentException("DbType配置为空");
-        }
 
         var slaveConfigs = new List<SlaveConnectionConfig>();
         if (dbConnOptions.EnbaleReadWriteSplitting)
@@ -93,7 +95,7 @@ public class SqlSugarDbClientFactory(IAbpLazyServiceProvider lazyServiceProvider
         var connectionConfig = new ConnectionConfig()
         {
             ConfigId = ConnectionStrings.DefaultConnectionStringName,
-            DbType = dbConnOptions.DbType ?? DbType.Sqlite,
+            DbType = dbConnOptions.DbType,
             ConnectionString = dbConnOptions.Url,
             IsAutoCloseConnection = true,
             SlaveConnectionConfigs = slaveConfigs,

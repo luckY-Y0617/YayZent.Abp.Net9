@@ -8,6 +8,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Uow;
 using Volo.Abp.Modularity;
+using YayZent.Framework.Ddd.Application;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 using YayZent.Framework.TenantManagement.Application.Contracts;
 using YayZent.Framework.TenantManagement.Application.Contracts.Dtos;
@@ -15,13 +16,13 @@ using YayZent.Framework.TenantManagement.Domain;
 
 namespace YayZent.Framework.TenantManagement.Application;
 
-public class TenantService(ISqlSugarRepository<TenantAggregateRoot, Guid> repository, IDataSeeder dataSeeder):CrudAppService<TenantAggregateRoot, TenantGetOutputDto, TenantGetListOutputDto, Guid, TenantGetListInputDto,
+public class TenantService(ISqlSugarRepository<TenantAggregateRoot, Guid> repository, IDataSeeder dataSeeder):CustomCrudAppService<TenantAggregateRoot, TenantGetOutputDto, TenantGetListOutputDto, Guid, TenantGetListInputDto,
     TenantCreateDto, TenantUpdateDto>(repository), ITenantService
 {
     private readonly ISqlSugarRepository<TenantAggregateRoot, Guid> _repository = repository;
     private readonly IDataSeeder _dataSeeder = dataSeeder;
     
-    public override Task<TenantGetOutputDto> GetAsync(Guid id)
+    public override Task<TenantGetOutputDto> GetAsync(Guid id)   
     {
         return base.GetAsync(id);
     }
@@ -69,11 +70,12 @@ public class TenantService(ISqlSugarRepository<TenantAggregateRoot, Guid> reposi
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
+    [UnitOfWork]
     [HttpPut("tenant/init/{id}")]
     public async Task InitAsync([FromRoute] Guid id)
     {
-        // 在切换租户（CurrentTenant.Change(id)）之前，显式保存当前租户上下文中的挂起更改。
-        await CurrentUnitOfWork.SaveChangesAsync();
+        // 在切换租户上下文之前调用 SaveChangesAsync() 是一种稳健的做法，以确保当前租户未提交的更改不会污染其他租户的数据
+        await CurrentUnitOfWork!.SaveChangesAsync();
         using (CurrentTenant.Change(id))
         {
             await CodeFirstAsync(this.LazyServiceProvider);

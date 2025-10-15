@@ -7,11 +7,6 @@ namespace YayZent.Framework.Blog.Domain.Entities;
 public class BlogFileEntity: Entity<Guid>
 {
     /// <summary>
-    /// 文件大小
-    /// </summary>
-    public long FileSizeInBytes { get; set; }
-    
-    /// <summary>
     /// blog内容
     /// </summary>
     [SugarColumn(ColumnDataType = "longtext")]
@@ -38,15 +33,18 @@ public class BlogFileEntity: Entity<Guid>
     public string? FileBackUpUrl { get; set; }
 
     public BlogFileEntity() {}
-    
-    public BlogFileEntity(Guid id, long fileSizeInBytes, string fileContent, Uri? fileUploadUrl, 
-        Uri? fileBackUpUrl, Uri? imageUploadUrl, Uri? imageBackUpUrl) : base(id)
+
+    public BlogFileEntity(Guid id, string fileContent) : base(id)
     {
-        FileSizeInBytes = fileSizeInBytes;
         FileContent = fileContent;
-        FileUploadUrl = fileUploadUrl?.ToString();
-        FileBackUpUrl = fileBackUpUrl?.ToString();
-        ImageUploadUrl = imageUploadUrl?.ToString();
-        ImageBackUpUrl = imageBackUpUrl?.ToString();
     }
+
+    public void SetUrl(Uri? fileUploadUrl, Uri? fileBackUpUrl, Uri? imageUploadUrl, Uri? imageBackUpUrl)
+    {
+        FileUploadUrl = fileUploadUrl?.ToString();
+        FileBackUpUrl = fileBackUpUrl?.LocalPath;
+        ImageUploadUrl = imageUploadUrl?.ToString();
+        ImageBackUpUrl = imageBackUpUrl?.LocalPath;
+    }
+
 }

@@ -3,7 +3,7 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.EventBus.Local;
 using YayZent.Framework.Bbs.Domain.Shared.Etos;
 
-namespace YayZent.Abp.Web.Jobs.bbs;
+namespace YayZent.Framework.Bbs.Application.Jobs;
 
 public class AccessLogFlushJob : HangfireBackgroundWorkerBase, ITransientDependency
 {

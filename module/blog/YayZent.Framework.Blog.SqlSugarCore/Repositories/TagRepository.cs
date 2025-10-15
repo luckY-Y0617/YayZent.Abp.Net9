@@ -6,7 +6,7 @@ using YayZent.Framework.SqlSugarCore.Repositories;
 
 namespace YayZent.Framework.Blog.SqlSugarCore.Repositories;
 
-public class TagRepository: SqlSugarRepository<TagAggregateRoot>, ITagRepository, ITransientDependency
+public class TagRepository: SqlSugarRepository<TagAggregateRoot, Guid>, ITagRepository, ITransientDependency
 {
     public TagRepository(ISugarDbContextProvider<ISqlSugarDbContext> dbContextProvider) : base(dbContextProvider){}
 

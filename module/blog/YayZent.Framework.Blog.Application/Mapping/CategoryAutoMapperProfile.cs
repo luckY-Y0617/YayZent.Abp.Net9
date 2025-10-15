@@ -8,7 +8,10 @@ public class CategoryAutoMapperProfile: Profile
 {
     public CategoryAutoMapperProfile()
     {
-        CreateMap<CatergoryAggregateRoot, CategoryGetListOutputDto>();
+        CreateMap<CategoryAggregateRoot, CategoryGetListOutputDto>();
+        CreateMap<CatergoryCreateDto, CategoryAggregateRoot>();
+        CreateMap<CategoryAggregateRoot, CategoryGetOutputDto>();
+        CreateMap<CategoryUpdateDto, CategoryAggregateRoot>();
     }
     
 }

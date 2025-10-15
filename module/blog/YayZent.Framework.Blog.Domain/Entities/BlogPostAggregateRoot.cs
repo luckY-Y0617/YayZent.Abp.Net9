@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using SqlSugar;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -36,11 +35,6 @@ public class BlogPostAggregateRoot : AuditedAggregateRoot<Guid>, ISoftDelete
     public string? Summary { get; set; }
 
     /// <summary>
-    /// URL唯一标识
-    /// </summary>
-    public string? Slug { get; set; }
-
-    /// <summary>
     /// 浏览数
     /// </summary>
     public int Views { get; set; } = 0;
@@ -70,29 +64,20 @@ public class BlogPostAggregateRoot : AuditedAggregateRoot<Guid>, ISoftDelete
     [Navigate(NavigateType.OneToOne, nameof(BlogFileId), nameof(BlogFileEntity.Id))]
     public BlogFileEntity? BlogFile { get; private set; }
     
-    [Navigate((NavigateType.ManyToOne), nameof(CategoryId), nameof(CatergoryAggregateRoot.Id))]
-    public CatergoryAggregateRoot? Catergory { get; private set; }
+    [Navigate((NavigateType.ManyToOne), nameof(CategoryId), nameof(CategoryAggregateRoot.Id))]
+    public CategoryAggregateRoot? Catergory { get; private set; }
 
     public BlogPostAggregateRoot()
     {
     }
     
-    public BlogPostAggregateRoot(Guid id, string author, string title, string? summary) : base(id)
+    public BlogPostAggregateRoot(Guid id ,string author, string title, string? summary) : base(id)
     {
         Title = title;
         Summary = summary;
         Author = author;
-        Slug = GenerateSlug(title);
     }
 
-    private static string GenerateSlug(string text)
-    {
-        text = text.ToLower();
-        text = Regex.Replace(text, @"[^a-z0-9\s-]", "");
-        text = Regex.Replace(text, @"\s+", "-").Trim('-');
-        return text;
-    }
-    
     public void SetTags(List<TagAggregateRoot>? tags)
     {
         Tags = tags;
@@ -103,7 +88,7 @@ public class BlogPostAggregateRoot : AuditedAggregateRoot<Guid>, ISoftDelete
         BlogFile = file;
     }
 
-    public void SetCategory(CatergoryAggregateRoot? catergory)
+    public void SetCategory(CategoryAggregateRoot? catergory)
     {
         Catergory = catergory;
     }

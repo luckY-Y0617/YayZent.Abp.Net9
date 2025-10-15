@@ -53,6 +53,34 @@ public class LocalFileClient: IFileClient
         return new Uri(fullPath);
     }
 
+    public async Task<Uri> UpdateFileAsync(string? fullPath, Stream content, CancellationToken cancellationToken = default)
+    {
+        
+        if (string.IsNullOrWhiteSpace(fullPath))
+        {
+            throw new ArgumentException("文件 key 不能为空", nameof(fullPath));
+        }
+
+        if(System.IO.File.Exists(fullPath))
+        {
+            System.IO.File.Delete(fullPath);
+        }
+
+        try
+        {
+            using (FileStream fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+            {
+                await content.CopyToAsync(fs, cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("保存文件失败");
+        }
+
+        return new Uri(fullPath);
+    }
+
     public Task<Stream> ReadFileAsync(string fullPath, CancellationToken cancellationToken = default)
     {
         if (!System.IO.File.Exists(fullPath))
@@ -60,5 +88,19 @@ public class LocalFileClient: IFileClient
             throw new BusinessException("本地文件不存在");
         }
         return Task.FromResult<Stream>(new FileStream(fullPath, FileMode.Open, FileAccess.Read));
+    }
+
+    public Task DeleteFileAsync(string? key, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            throw new ArgumentException("文件 key 不能为空", nameof(key));
+        }
+        
+        if (System.IO.File.Exists(key))
+        {
+            System.IO.File.Delete(key);
+        }
+        return Task.CompletedTask;
     }
 }

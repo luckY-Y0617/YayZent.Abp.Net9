@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Volo.Abp.EventBus.Local;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Claims;
 using YayZent.Framework.Auth.Application.Contracts.Token;
 using YayZent.Framework.Auth.Domain.Shared.Consts;
@@ -12,11 +13,13 @@ using YayZent.Framework.Core.Options;
 
 namespace YayZent.Framework.Auth.Infrastructure.Token;
 
-public class TokenProvider(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> refreshJwtOptions, ILocalEventBus localEventBus): ITokenProvider
+public class TokenProvider(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> refreshJwtOptions,
+    ILocalEventBus localEventBus, ICurrentTenant currentTenant): ITokenProvider
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
     private readonly RefreshJwtOptions _refreshJwtOptions = refreshJwtOptions.Value;
     private readonly ILocalEventBus _localEventBus = localEventBus;
+    private readonly ICurrentTenant _currentTenant = currentTenant;
 
     public async Task<string> CreateAccessTokenAsync(List<Claim> claims)
     {

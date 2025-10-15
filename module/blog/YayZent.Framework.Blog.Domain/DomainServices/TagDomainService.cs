@@ -22,6 +22,11 @@ public class TagDomainService: DomainService, ITagDomainService
         _tagRepository = tagRepository;
     }
 
+    public async Task DeleteByBlogIdAsync(Guid blogId)
+    {
+        await _tagRepository.DeleteAsync(x => x.Id == blogId);
+    }
+
     public async Task<List<TagAggregateRoot>?> GetTagListByIdsAsync(List<Guid>? tagIds)
     {
         if (tagIds == null)

@@ -15,7 +15,9 @@ public class BlogAutoMapperProfile: Profile
             .ForMember(dest => dest.CreationTime,
                 opt => opt.MapFrom(x => x.CreationTime.ToString("yyyy-MM-dd")))
             .ForMember(dest => dest.ImageUrl,
-                opt => opt.MapFrom(x => x.BlogFile != null ? x.BlogFile.ImageUploadUrl : null));
+                opt => opt.MapFrom(x => x.BlogFile != null ? x.BlogFile.ImageUploadUrl : null))
+            .ForMember(dest => dest.Tags,
+                opt => opt.MapFrom(x => x.Tags != null ? x.Tags.Select(t => t.TagName).ToList() : null));
 
         CreateMap<BlogPostAggregateRoot, MenuItem>()
             .ForMember(dest => dest.Label,

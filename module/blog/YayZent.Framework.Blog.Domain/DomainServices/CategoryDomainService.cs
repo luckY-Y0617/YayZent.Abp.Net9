@@ -1,3 +1,4 @@
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 using Volo.Abp.Users;
@@ -11,17 +12,22 @@ public class CategoryDomainService: DomainService, ICategoryDomainService
 {
     private readonly IGuidGenerator _guidGenerator;
     private readonly ICurrentUser _currentUser;
-    private readonly ISqlSugarRepository<CatergoryAggregateRoot> _categoryRepository;
+    private readonly ISqlSugarRepository<CategoryAggregateRoot> _categoryRepository;
 
     public CategoryDomainService(IGuidGenerator guidGenerator, ICurrentUser currentUser,
-        ISqlSugarRepository<CatergoryAggregateRoot> categoryRepository)
+        ISqlSugarRepository<CategoryAggregateRoot> categoryRepository)
     {
         _guidGenerator = guidGenerator;
         _currentUser = currentUser;
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<CatergoryAggregateRoot> CreateOrGetCategoryAsync(string categoryName, int sequenceNumber)
+    public async Task<CategoryAggregateRoot> GetAsync(Guid id)
+    {
+        return await _categoryRepository.GetFirstAsync(x => x.Id == id);
+    }
+
+    public async Task<CategoryAggregateRoot> CreateOrGetCategoryAsync(string categoryName, int sequenceNumber)
     {
         var category = await _categoryRepository.DbQueryable.Where(x => x.CategoryName == categoryName).FirstAsync();
 
@@ -30,7 +36,7 @@ public class CategoryDomainService: DomainService, ICategoryDomainService
             return category;
         }
         
-        category = new CatergoryAggregateRoot(_guidGenerator.Create(), categoryName, sequenceNumber);
+        category = new CategoryAggregateRoot(_guidGenerator.Create(), categoryName, sequenceNumber);
         await _categoryRepository.InsertAsync(category);
         
         return category;

@@ -5,7 +5,7 @@ namespace YayZent.Framework.SqlSugarCore.Abstractions;
 
 public interface ISqlSugarDbClientFactory
 { 
-    ISqlSugarClient Init();
+    Task<ISqlSugarClient> InitAsync();
     
-    ISqlSugarClient Create(SqlSugarDbContextCreationContext config);
+    Task<ISqlSugarClient> CreateAsync(SqlSugarDbContextCreationContext config);
 }

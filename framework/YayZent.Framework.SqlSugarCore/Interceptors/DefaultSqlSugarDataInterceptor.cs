@@ -11,29 +11,45 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Events;
 using Volo.Abp.Guids;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Uow;
 using Volo.Abp.Users;
 using YayZent.Framework.SqlSugarCore.Abstractions;
 
 namespace YayZent.Framework.SqlSugarCore.Interceptors
 {
-    public class DefaultSqlSugarDataInterceptor : SqlSugarDataInterceptor
+    public class DefaultSqlSugarDataInterceptor(IAbpLazyServiceProvider lazyServiceProvider)  : SqlSugarDataInterceptor(lazyServiceProvider)
     {
-        public DefaultSqlSugarDataInterceptor(IAbpLazyServiceProvider lazyServiceProvider): base(lazyServiceProvider)
+        protected virtual DbConnOptions DbConnOptions => LazyServiceProvider.LazyGetRequiredService<IOptions<DbConnOptions>>().Value;
+
+        protected virtual ICurrentUser CurrentUser => LazyServiceProvider.LazyGetRequiredService<ICurrentUser>();
+        protected virtual IGuidGenerator GuidGenerator => LazyServiceProvider.LazyGetRequiredService<IGuidGenerator>();
+        
+        protected virtual ICurrentTenant CurrentTenant => LazyServiceProvider.LazyGetRequiredService<ICurrentTenant>();
+        protected virtual ILoggerFactory Logger => LazyServiceProvider.LazyGetRequiredService<ILoggerFactory>();
+        protected virtual IDataFilter DataFilter => LazyServiceProvider.LazyGetRequiredService<IDataFilter>();
+
+        protected virtual IEntityChangeEventHelper EntityChangeEventHelper => LazyServiceProvider.LazyGetService<IEntityChangeEventHelper>(NullEntityChangeEventHelper.Instance);
+
+        protected virtual IUnitOfWorkManager UnitOfWorkManager => LazyServiceProvider.LazyGetRequiredService<IUnitOfWorkManager>();
+        protected virtual bool IsSoftDeleteFilterEnabled => DataFilter.IsEnabled<ISoftDelete>() ;
+        protected virtual bool IsMultiTenantFilterEnabled => DataFilter.IsEnabled<IMultiTenant>() ;
+        
+        protected override  void CustomDataFilter(ISqlSugarClient sqlSugarClient)
         {
+            // 配置软删除过滤器
+            if (IsSoftDeleteFilterEnabled)
+            {
+                sqlSugarClient.QueryFilter.AddTableFilter<ISoftDelete>(entity => !entity.IsDeleted);
+            }
+
+            // 配置多租户过滤器
+            if (IsMultiTenantFilterEnabled)
+            {
+                var currentTenantId = CurrentTenant.Id;
+                sqlSugarClient.QueryFilter.AddTableFilter<IMultiTenant>(entity => entity.TenantId == currentTenantId);
+            }
         }
-
-        protected DbConnOptions DbConnOptions => LazyServiceProvider.LazyGetRequiredService<IOptions<DbConnOptions>>().Value;
-
-        protected ICurrentUser CurrentUser => LazyServiceProvider.LazyGetRequiredService<ICurrentUser>();
-        protected IGuidGenerator GuidGenerator => LazyServiceProvider.LazyGetRequiredService<IGuidGenerator>();
-        protected ILoggerFactory Logger => LazyServiceProvider.LazyGetRequiredService<ILoggerFactory>();
-        protected IDataFilter DataFilter => LazyServiceProvider.LazyGetRequiredService<IDataFilter>();
-
-        protected IEntityChangeEventHelper EntityChangeEventHelper => LazyServiceProvider.LazyGetService<IEntityChangeEventHelper>(NullEntityChangeEventHelper.Instance);
-
-        public IUnitOfWorkManager UnitOfWorkManager => LazyServiceProvider.LazyGetRequiredService<IUnitOfWorkManager>();
-        protected virtual bool IsSoftDeleteFilterEnabled => DataFilter?.IsEnabled<ISoftDelete>() ?? false;
 
         #region 数据操作之前执行
 
@@ -90,8 +106,8 @@ namespace YayZent.Framework.SqlSugarCore.Interceptors
 
                 case nameof(IAuditedObject.CreatorId) when propType == typeof(Guid):
                     entityInfo.SetValue(oldValue is Guid creatorId && creatorId == Guid.Empty
-                        ? Guid.Empty
-                        : CurrentUser.Id);
+                        ? CurrentUser.Id
+                        : Guid.Empty);
                     break;
             }
         }
@@ -107,7 +123,7 @@ namespace YayZent.Framework.SqlSugarCore.Interceptors
         {
             switch (propName)
             {
-                case nameof(IEntity<Guid>.Id) when propType == typeof(Guid):
+                case nameof(IEntity<Guid>.Id) when propType == typeof(Guid?):
                     entityInfo.SetValue(oldValue is Guid id && id == Guid.Empty ? GuidGenerator.Create() : oldValue);
                     break;
 
@@ -115,10 +131,11 @@ namespace YayZent.Framework.SqlSugarCore.Interceptors
                     entityInfo.SetValue(oldValue is DateTime dt && dt > DateTime.MinValue ? dt : DateTime.Now);
                     break;
 
-                case nameof(IAuditedObject.CreatorId) when propType == typeof(Guid):
-                    entityInfo.SetValue(oldValue is Guid creatorId && creatorId == Guid.Empty
-                        ? Guid.Empty
-                        : CurrentUser.Id);
+                case nameof(IAuditedObject.CreatorId) when propType == typeof(Guid?):
+                    var creatorId = oldValue as Guid?;
+                    entityInfo.SetValue(!creatorId.HasValue || creatorId == Guid.Empty
+                        ? CurrentUser.Id
+                        : creatorId);
                     break;
             }
         }
@@ -182,7 +199,7 @@ namespace YayZent.Framework.SqlSugarCore.Interceptors
         /// </summary>
         /// <param name="entity">需要生成事件报告的实体。</param>
         /// <returns>包含领域事件的实体事件报告。</returns>
-        protected virtual EntityEventReport? CreateEntityEventReport(object entity)
+        protected virtual EntityEventReport CreateEntityEventReport(object entity)
         {
             var eventReport = new EntityEventReport();
 

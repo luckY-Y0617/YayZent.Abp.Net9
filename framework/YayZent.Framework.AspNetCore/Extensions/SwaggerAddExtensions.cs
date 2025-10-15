@@ -62,6 +62,7 @@ public static class SwaggerAddExtensions
 
             // 枚举增强显示
             options.SchemaFilter<EnumSchemaFilter>();
+            options.OperationFilter<TenantHeaderOperationFilter>();
         });
 
         return services;

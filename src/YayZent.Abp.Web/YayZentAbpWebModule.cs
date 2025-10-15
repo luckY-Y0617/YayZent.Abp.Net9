@@ -34,6 +34,7 @@ using YayZent.Framework.Bbs.Infrastructure.MiddleWares;
 using YayZent.Framework.Blog.Application;
 using YayZent.Framework.Rbac.Application;
 using YayZent.Framework.TenantManagement.Application;
+using YayZent.Framework.TenantManagement.Domain;
 
 namespace YayZent.Abp.Web;
 
@@ -62,7 +63,7 @@ public class YayZentAbpWebModule: AbpModule
             options.ConventionalControllers.Create(typeof(YayZentFrameworkBlogApplicationModule).Assembly,
                 option => option.RemoteServiceName = "Blog");
             options.ConventionalControllers.Create(typeof(YayZentFrameworkTenantManagementApplicationModule).Assembly,
-                option => option.RemoteServiceName = "TenantManagement");
+                option => option.RemoteServiceName = "Tenant");
             options.ConventionalControllers.Create(typeof(YayZentFrameworkRbacApplicationModule).Assembly,
                 option => option.RemoteServiceName = "Rbac");
             options.ConventionalControllers.Create(typeof(YayZentFrameworkAuthApplicationModule).Assembly,
@@ -83,6 +84,7 @@ public class YayZentAbpWebModule: AbpModule
         {
             options.TenantResolvers.Clear();
             options.TenantResolvers.Add(new HeaderTenantResolveContributor());
+            options.TenantResolvers.Add(new TokenTenantResolveContributor());
         });
         
         Configure<AbpAuditingOptions>(options =>
@@ -229,10 +231,10 @@ public class YayZentAbpWebModule: AbpModule
 
         app.UseRouting();
         app.UseCors(DefaultCorsPolicyName);
-
-        app.UseMultiTenancy();
         
         app.UseAuthentication();
+        
+        app.UseMultiTenancy();
 
         app.UseAccessLog();
         

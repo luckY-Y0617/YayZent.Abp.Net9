@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Policy;
 using Microsoft.Extensions.Options;
 using OBS;
 using OBS.Model;
@@ -6,6 +7,7 @@ using YayZent.Framework.Core.File.Abstractions;
 using YayZent.Framework.Core.File.Enums;
 using YayZent.Framework.Core.File.Options;
 using YayZent.Framework.Core.File.Extensions;
+using YayZent.Framework.Core.File.Helpers;
 
 namespace YayZent.Framework.Core.File.Clients;
 
@@ -58,9 +60,6 @@ public class HuaWeiYunFileClient: IFileClient
             throw new ArgumentException("Content is null");
         }
 
-        string url = string.Concat(options.Value.UrlRoot, options.Value.WorkingDir, key);
-        string fullPath = ConcatUrl(options.Value.WorkingDir, key);
-
         PutObjectRequest request = new PutObjectRequest()
         {
             BucketName = options.Value.BucketName,
@@ -87,5 +86,63 @@ public class HuaWeiYunFileClient: IFileClient
         GetObjectResponse response = ObsClient.GetObject(request);
 
         return Task.FromResult<Stream>(response.OutputStream);
+    }
+
+    public async Task<Uri> UpdateFileAsync(string? key, Stream content, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            throw new ArgumentException("文件 key 不能为空", nameof(key));
+        }
+        
+        if (content.Length < 0)
+        {
+            throw new ArgumentException("Content is null");
+        }
+
+        PutObjectRequest request = new PutObjectRequest()
+        {
+            BucketName = options.Value.BucketName,
+            ObjectKey = ObsPathHelper.GetObjectKeyFromUrl(key),
+            InputStream = content
+        };
+
+        var res = await ObsClient.PutObjectAsync(request);
+        if(res.StatusCode !=HttpStatusCode.OK)
+        {
+            throw new HttpRequestException("Upload Failed");
+        }
+
+        return new Uri(res.ObjectUrl);
+    }
+
+    public Task DeleteFileAsync(string? key, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            throw new ArgumentException("文件 key 不能为空", nameof(key));
+        }
+        
+
+        DeleteObjectRequest request = new DeleteObjectRequest()
+        {
+            BucketName = options.Value.BucketName,
+            ObjectKey = ObsPathHelper.GetObjectKeyFromUrl(key)
+        };
+
+        try
+        {
+            DeleteObjectResponse response = ObsClient.DeleteObject(request);
+            if (response.StatusCode != HttpStatusCode.NoContent && response.StatusCode != HttpStatusCode.OK)
+            {
+                throw new HttpRequestException($"删除文件失败，状态码：{response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"删除文件时发生异常：{ex.Message}", ex);
+        }
+
+        return Task.CompletedTask;
     }
 }

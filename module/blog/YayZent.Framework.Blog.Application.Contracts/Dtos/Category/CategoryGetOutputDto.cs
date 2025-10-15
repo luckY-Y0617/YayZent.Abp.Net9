@@ -4,6 +4,5 @@ namespace YayZent.Framework.Blog.Application.Contracts.Dtos.Category;
 
 public class CategoryGetOutputDto: EntityDto<Guid>
 {
-    public Guid CategoryId { get; set; }
-    
+    public string CategoryName { get; set; }
 }

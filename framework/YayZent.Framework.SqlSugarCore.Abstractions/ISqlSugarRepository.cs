@@ -71,6 +71,25 @@ public interface ISqlSugarRepository<TEntity> : IRepository<TEntity>, IUnitOfWor
     Task<bool> DeleteAsync(List<TEntity> entities);
     Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> deleteExpression);
     Task<bool> DeleteByIdAsync(dynamic id);
-    Task<bool> DeleteByIdsAsync(dynamic ids);
+    Task<bool> DeleteByIdsAsync(dynamic[] ids);
+    #endregion
+
+    #region 更新
+    /// <summary>
+    /// 更新实体
+    /// </summary>
+    Task<bool> UpdateAsync(TEntity entity);
+
+    /// <summary>
+    /// 批量更新实体
+    /// </summary>
+    Task<bool> UpdateRangeAsync(List<TEntity> entities);
+
+    /// <summary>
+    /// 条件更新指定列
+    /// </summary>
+    Task<bool> UpdateAsync(
+        Expression<Func<TEntity, TEntity>> columns,
+        Expression<Func<TEntity, bool>> predicate);
     #endregion
 }

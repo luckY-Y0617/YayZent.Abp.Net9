@@ -6,5 +6,9 @@ namespace YayZent.Framework.Blog.Domain.DomainServices.IDomainServices;
 public interface IBlogPostDomainService: IDomainService
 {
     Task<BlogPostAggregateRoot> CreateBlogPostAsync(string title, string blogContent, string author, 
-        string? summary, Stream? image, string? imageName, string categoryName, List<Guid>? tagIds);
+        string? summary, Guid categoryId, List<Guid>? tagIds);
+
+    Task<BlogPostAggregateRoot> UpdateBlogPostAsync(BlogPostAggregateRoot blogPost, string title, string author,
+        string? summary, Guid categoryId, List<Guid>? tagIds);
+
 }

@@ -4,9 +4,9 @@ namespace YayZent.Framework.SqlSugarCore.Abstractions;
 
 public class DbConnOptions
 {
-    public string? Url { get; set; }
+    public string Url { get; set; }
     
-    public DbType? DbType { get; set; }
+    public DbType DbType { get; set; }
 
     public bool EnableDbSeed { get; set; } = false;
     

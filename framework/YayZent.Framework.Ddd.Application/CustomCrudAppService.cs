@@ -20,14 +20,14 @@ public abstract class CustomCrudAppService<TEntity, TGetOutputDto, TGetListOutpu
     
     #region 列表查询
 
-    public override async Task<PagedResultDto<TGetListOutputDto>> GetListAsync(TGetListInputDto request)
+    public override async Task<PagedResultDto<TGetListOutputDto>> GetListAsync(TGetListInputDto input)
     {
         List<TEntity> entities;
         long totalCount;
 
-        if (request is IPagedResultRequest paged)
+        if (input is IPagedResultRequest paged)
         {
-            entities = await GetPagedEntitiesAsync(paged.SkipCount, paged.MaxResultCount, request.Sorting!);
+            entities = await GetPagedEntitiesAsync(paged.SkipCount, paged.MaxResultCount, input.Sorting!);
             totalCount = entities.Count;
         }
         else
@@ -53,18 +53,18 @@ public abstract class CustomCrudAppService<TEntity, TGetOutputDto, TGetListOutpu
     /// 子类重写此方法对 TCreateDto 做业务校验，例如字段唯一性等。
     /// 默认不做校验。
     /// </summary>
-    protected virtual Task CheckCreateInputDtoAsync(TCreateDto request)
+    protected virtual Task CheckCreateInputDtoAsync(TCreateDto input)
     {
         return Task.CompletedTask;
     }
 
-    public override async Task<TGetOutputDto> CreateAsync(TCreateDto request)
+    public override async Task<TGetOutputDto> CreateAsync(TCreateDto input)
     {
         // 1. 验证 ABP 内置权限（CreatePolicyName）
         await CheckCreatePolicyAsync();
         // 2. 自定义校验
-        await CheckCreateInputDtoAsync(request);
-        var entity = await MapToEntityAsync(request);
+        await CheckCreateInputDtoAsync(input);
+        var entity = await MapToEntityAsync(input);
         TryToSetTenantId(entity);
         await Repository.InsertAsync(entity, true);
         return await MapToGetOutputDtoAsync(entity);
@@ -74,17 +74,17 @@ public abstract class CustomCrudAppService<TEntity, TGetOutputDto, TGetListOutpu
     /// 子类重写此方法对 TUpdateDto 做业务校验，例如不允许更新某些字段等。
     /// 默认不做校验。
     /// </summary>
-    protected virtual Task CheckUpdateInputDtoAsync(TEntity entity, TUpdateDto request)
+    protected virtual Task CheckUpdateInputDtoAsync(TEntity entity, TUpdateDto input)
     {
         return Task.CompletedTask;
     }
 
-    public override async Task<TGetOutputDto> UpdateAsync(TKey id,TUpdateDto request)
+    public override async Task<TGetOutputDto> UpdateAsync(TKey id,TUpdateDto input)
     {
         await CheckUpdatePolicyAsync();
         var entity = await GetEntityByIdAsync(id);
-        await CheckUpdateInputDtoAsync(entity, request);
-        await MapToEntityAsync(request, entity);
+        await CheckUpdateInputDtoAsync(entity, input);
+        await MapToEntityAsync(input, entity);
         await Repository.UpdateAsync(entity, true);
         return await MapToGetOutputDtoAsync(entity);
     }
@@ -109,42 +109,6 @@ public abstract class CustomCrudAppService<TEntity, TGetOutputDto, TGetListOutpu
     }
     
     #endregion
-    
-    #region —— Excel 导出 & 导入 ——
-
-    public virtual async Task<FileContentResult> ExportToExcelAsync(TGetListInputDto request)
-    {
-        // 1. 如果前端传了分页参数，先获取总数，再导出全部
-        if (request is IPagedResultRequest paged)
-        {
-            paged.SkipCount = 0;
-            paged.MaxResultCount = LimitedResultRequestDto.MaxMaxResultCount;
-        }
-
-        // 2. 重用 GetListAsync 拿到完整列表 DTO
-        var pagedResult = await GetListAsync(request);
-        var dtos = pagedResult.Items;
-        
-        // 3. 在内存中生成 Excel
-        await using var ms = new MemoryStream();
-        await ms.SaveAsAsync(dtos);
-        
-        var fileBytes = ms.ToArray();
-        var fileName =  $"{typeof(TEntity).Name}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
-        
-        return new FileContentResult(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){FileDownloadName = fileName};
-    }
-
-    /// <summary>
-    /// 导入 Excel，将 IFormFile 解析成 List&lt;TCreateDto&gt;，再映射为实体批量插入。
-    /// 子类可重写以增加校验或去重逻辑。
-    /// </summary>
-    public virtual Task ImportToExcelAsync(IFormFile? file)
-    {
-        throw new NotImplementedException();
-    }
-    #endregion
-    
     
 }
 

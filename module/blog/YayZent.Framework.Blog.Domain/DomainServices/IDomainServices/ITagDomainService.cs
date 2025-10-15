@@ -8,4 +8,6 @@ public interface ITagDomainService: IDomainService
     Task<List<TagAggregateRoot>?> GetTagListByIdsAsync(List<Guid>? tagIds);
 
     Task<List<Guid>> CreateTagsAsync(List<string>? tags);
+
+    Task DeleteByBlogIdAsync(Guid blogId);
 }

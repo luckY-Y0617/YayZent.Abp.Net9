@@ -11,12 +11,12 @@ public class CreateBlogPostInputDto
 
     public required string Author { get; set; } = "小🐏";
     
-    public required string Category { get; set; }
+    public Guid CategoryId { get; set; }
     
     public IFormFile? Image { get; set; }
 
     public string? Summary { get; set; }
-    public string? Tags { get; set; }
+    public string TagIds { get; set; }
 }
 
 public class CreateBlogPostRequestValidator : AbstractValidator<CreateBlogPostInputDto>

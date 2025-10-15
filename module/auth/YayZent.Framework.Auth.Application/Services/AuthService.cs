@@ -8,6 +8,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Caching;
 using Volo.Abp.EventBus.Local;
 using Volo.Abp.Guids;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Security.Claims;
 using Volo.Abp.Users;
@@ -42,9 +43,10 @@ public class AuthService: ApplicationService
     private readonly ICaptchaService _captchaService;
     private readonly IGuidGenerator _guidGenerator;
     private readonly ITokenProvider _tokenProvider;
+    private readonly ICurrentTenant _currentTenant;
 
     public AuthService(
-        IDistributedCache<UserInfoCacheItem, UserInfoCacheKey> userCache, 
+        IDistributedCache<UserInfoCacheItem, UserInfoCacheKey> userCache, ICurrentTenant currentTenant,
         IHttpContextAccessor httpContextAccessor,  LoginLogService loginLogService, ITokenProvider tokenProvider,
         IObjectMapper objectMapper,  ICurrentUser currentUser, ISqlSugarRepository<RefreshTokenAggregateRoot> refreshTokenRepository,
         IOptions<RbacOptions> rbacOptions, IUserInternalService userInternalService, ICaptchaService captchaService, IGuidGenerator guidGenerator)
@@ -61,6 +63,7 @@ public class AuthService: ApplicationService
         _captchaService = captchaService;
         _guidGenerator = guidGenerator;
         _tokenProvider = tokenProvider;
+        _currentTenant = currentTenant;
     }
 
     private Guid GetCurrentUserId()
@@ -103,6 +106,11 @@ public class AuthService: ApplicationService
         claims.Add(new Claim(AbpClaimTypes.UserId, dto.User.Id.ToString()));
         claims.Add(new Claim(AbpClaimTypes.UserName, dto.User.UserName));
 
+        if (_currentTenant.Id.HasValue)
+        {
+            claims.Add(new Claim(AbpClaimTypes.TenantId, _currentTenant.Id.Value.ToString()));
+        }
+        
         if (dto.User.DeptId != null)
         {
             claims.Add(new Claim(TokenTypeConst.DeptId, dto.User.DeptId.Value.ToString()));
